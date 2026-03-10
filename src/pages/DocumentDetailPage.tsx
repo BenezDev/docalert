@@ -5,6 +5,7 @@ import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, PENALTY_INFO, RENEWAL_GUIDES } from "@/lib/documents";
 import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, ExternalLink } from "lucide-react";
+import { PenaltyCalculator } from "@/components/PenaltyCalculator";
 
 export default function DocumentDetailPage() {
   const { id } = useParams<{ id: string }>();
