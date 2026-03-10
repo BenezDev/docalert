@@ -1,128 +1,110 @@
-import { useState, useEffect, createContext, useContext, type ReactNode } from "react";
+import { useState, useEffect, createContext, useContext, useCallback, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import type { DocumentType } from "@/lib/documents";
 
 export interface DocRecord {
   id: string;
   usuario_id: string;
   tipo: DocumentType;
-  apelido?: string;
-  numero_documento?: string;
+  apelido?: string | null;
+  numero_documento?: string | null;
   data_vencimento: string;
-  data_emissao?: string;
-  observacoes?: string;
+  data_emissao?: string | null;
+  observacoes?: string | null;
   resolvido: boolean;
   criado_em: string;
   atualizado_em: string;
-  // type-specific
-  extra?: Record<string, string>;
+  extra?: Record<string, string> | null;
 }
-
-export interface AlertConfig {
-  id: string;
-  documento_id: string;
-  dias_antes: number;
-  via_email: boolean;
-  ativo: boolean;
-}
-
-const MOCK_DOCS: DocRecord[] = [
-  {
-    id: "1",
-    usuario_id: "mock-user-1",
-    tipo: "CNH",
-    apelido: "CNH do João",
-    data_vencimento: (() => { const d = new Date(); d.setDate(d.getDate() + 23); return d.toISOString().split("T")[0]; })(),
-    resolvido: false,
-    criado_em: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    usuario_id: "mock-user-1",
-    tipo: "CRLV",
-    apelido: "Carro da esposa",
-    data_vencimento: (() => { const d = new Date(); d.setDate(d.getDate() + 45); return d.toISOString().split("T")[0]; })(),
-    resolvido: false,
-    criado_em: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    usuario_id: "mock-user-1",
-    tipo: "PASSAPORTE",
-    apelido: "Passaporte Maria",
-    data_vencimento: (() => { const d = new Date(); d.setDate(d.getDate() + 120); return d.toISOString().split("T")[0]; })(),
-    resolvido: false,
-    criado_em: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  },
-  {
-    id: "4",
-    usuario_id: "mock-user-1",
-    tipo: "IPVA",
-    apelido: "IPVA Civic",
-    data_vencimento: (() => { const d = new Date(); d.setDate(d.getDate() + 5); return d.toISOString().split("T")[0]; })(),
-    resolvido: false,
-    criado_em: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  },
-  {
-    id: "5",
-    usuario_id: "mock-user-1",
-    tipo: "RG",
-    apelido: "RG João",
-    data_vencimento: (() => { const d = new Date(); d.setDate(d.getDate() + 200); return d.toISOString().split("T")[0]; })(),
-    resolvido: false,
-    criado_em: new Date().toISOString(),
-    atualizado_em: new Date().toISOString(),
-  },
-];
 
 interface DocsContextType {
   documents: DocRecord[];
-  addDocument: (doc: Omit<DocRecord, "id" | "usuario_id" | "criado_em" | "atualizado_em">) => void;
-  updateDocument: (id: string, updates: Partial<DocRecord>) => void;
-  deleteDocument: (id: string) => void;
+  isLoading: boolean;
+  addDocument: (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }) => Promise<string | null>;
+  updateDocument: (id: string, updates: Partial<DocRecord>) => Promise<void>;
+  deleteDocument: (id: string) => Promise<void>;
   getDocument: (id: string) => DocRecord | undefined;
+  refetch: () => Promise<void>;
 }
 
 const DocsContext = createContext<DocsContextType | null>(null);
 
 export function DocsProvider({ children }: { children: ReactNode }) {
-  const [documents, setDocuments] = useState<DocRecord[]>(() => {
-    const saved = localStorage.getItem("docalert_docs");
-    return saved ? JSON.parse(saved) : MOCK_DOCS;
-  });
+  const { user } = useAuth();
+  const [documents, setDocuments] = useState<DocRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDocs = useCallback(async () => {
+    if (!user) { setDocuments([]); setIsLoading(false); return; }
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("documentos")
+      .select("*")
+      .order("data_vencimento", { ascending: true });
+
+    if (!error && data) {
+      setDocuments(data as DocRecord[]);
+    }
+    setIsLoading(false);
+  }, [user]);
 
   useEffect(() => {
-    localStorage.setItem("docalert_docs", JSON.stringify(documents));
-  }, [documents]);
+    fetchDocs();
+  }, [fetchDocs]);
 
-  const addDocument = (doc: Omit<DocRecord, "id" | "usuario_id" | "criado_em" | "atualizado_em">) => {
-    const newDoc: DocRecord = {
-      ...doc,
-      id: crypto.randomUUID(),
-      usuario_id: "mock-user-1",
-      criado_em: new Date().toISOString(),
-      atualizado_em: new Date().toISOString(),
-    };
-    setDocuments((prev) => [...prev, newDoc]);
+  const addDocument = async (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }) => {
+    if (!user) return null;
+    const { data, error } = await supabase
+      .from("documentos")
+      .insert({
+        usuario_id: user.id,
+        tipo: doc.tipo,
+        apelido: doc.apelido || null,
+        numero_documento: doc.numero_documento || null,
+        data_vencimento: doc.data_vencimento,
+        data_emissao: doc.data_emissao || null,
+        observacoes: doc.observacoes || null,
+        resolvido: doc.resolvido,
+      })
+      .select()
+      .single();
+
+    if (!error && data) {
+      setDocuments((prev) => [...prev, data as DocRecord]);
+      return data.id;
+    }
+    return null;
   };
 
-  const updateDocument = (id: string, updates: Partial<DocRecord>) => {
-    setDocuments((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, ...updates, atualizado_em: new Date().toISOString() } : d))
-    );
+  const updateDocument = async (id: string, updates: Partial<DocRecord>) => {
+    const { error } = await supabase
+      .from("documentos")
+      .update(updates)
+      .eq("id", id);
+
+    if (!error) {
+      setDocuments((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, ...updates, atualizado_em: new Date().toISOString() } : d))
+      );
+    }
   };
 
-  const deleteDocument = (id: string) => {
-    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  const deleteDocument = async (id: string) => {
+    const { error } = await supabase
+      .from("documentos")
+      .delete()
+      .eq("id", id);
+
+    if (!error) {
+      setDocuments((prev) => prev.filter((d) => d.id !== id));
+    }
   };
 
   const getDocument = (id: string) => documents.find((d) => d.id === id);
 
   return (
-    <DocsContext.Provider value={{ documents, addDocument, updateDocument, deleteDocument, getDocument }}>
+    <DocsContext.Provider value={{ documents, isLoading, addDocument, updateDocument, deleteDocument, getDocument, refetch: fetchDocs }}>
       {children}
     </DocsContext.Provider>
   );
