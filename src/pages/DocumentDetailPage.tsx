@@ -38,7 +38,6 @@ export default function DocumentDetailPage() {
   const handleResolve = async () => {
     await updateDocument(doc.id, { resolvido: !doc.resolvido });
   };
-  };
 
   return (
     <DashboardLayout>
