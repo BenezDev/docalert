@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+import dashboardMockup from "@/assets/dashboard-mockup.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -116,27 +117,65 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="py-20 md:py-32">
-        <div className="container text-center max-w-3xl mx-auto">
-          <Badge className="mb-6 bg-secondary/10 text-secondary border-secondary/20 font-body">
-            Nunca mais perca um prazo de documento
-          </Badge>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-            Nunca mais pague multa por documento vencido
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground font-body mb-8 max-w-2xl mx-auto">
-            DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. Simples assim.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="lg" onClick={() => navigate("/cadastro")}>
-              Criar conta grátis
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button variant="hero-outline" size="lg" onClick={() => {
-              document.getElementById("funcionalidades")?.scrollIntoView({ behavior: "smooth" });
-            }}>
-              Ver funcionalidades
-            </Button>
+      <section className="py-16 md:py-24 overflow-hidden">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <Badge className="mb-6 bg-secondary/10 text-secondary border-secondary/20 font-body">
+                Nunca mais perca um prazo de documento
+              </Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
+                Nunca mais pague multa por documento vencido
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground font-body mb-8 max-w-xl">
+                DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. Simples assim.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button variant="hero" size="lg" onClick={() => navigate("/cadastro")}>
+                  Criar conta grátis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button variant="hero-outline" size="lg" onClick={() => {
+                  document.getElementById("funcionalidades")?.scrollIntoView({ behavior: "smooth" });
+                }}>
+                  Ver funcionalidades
+                </Button>
+              </div>
+              <p className="mt-6 text-sm text-muted-foreground font-body flex items-center gap-2 justify-center lg:justify-start">
+                <Check className="h-4 w-4 text-success" /> Grátis para até 5 documentos
+                <span className="mx-1">·</span>
+                <Check className="h-4 w-4 text-success" /> Sem cartão de crédito
+              </p>
+            </div>
+            <div className="relative">
+              <div className="rounded-xl shadow-2xl overflow-hidden border border-border/50">
+                <img
+                  src={dashboardMockup}
+                  alt="Dashboard do DocAlert mostrando documentos monitorados com alertas de vencimento"
+                  className="w-full h-auto"
+                  loading="eager"
+                />
+              </div>
+              {/* Floating accent elements */}
+              <div className="absolute -bottom-4 -left-4 bg-card rounded-lg shadow-card-hover p-3 border border-border/50 hidden md:flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <Bell className="h-4 w-4 text-destructive" />
+                </div>
+                <div>
+                  <p className="text-xs font-body font-semibold">CNH vence em 7 dias</p>
+                  <p className="text-[10px] text-muted-foreground font-body">Alerta enviado agora</p>
+                </div>
+              </div>
+              <div className="absolute -top-3 -right-3 bg-card rounded-lg shadow-card-hover p-3 border border-border/50 hidden md:flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs font-body font-semibold">Economia: R$ 586</p>
+                  <p className="text-[10px] text-muted-foreground font-body">Renovando a tempo</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
