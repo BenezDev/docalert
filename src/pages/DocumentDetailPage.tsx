@@ -5,6 +5,7 @@ import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, PENALTY_INFO, RENEWAL_GUIDES } from "@/lib/documents";
 import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, ExternalLink } from "lucide-react";
+import { PenaltyCalculator } from "@/components/PenaltyCalculator";
 
 export default function DocumentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -73,16 +74,29 @@ export default function DocumentDetailPage() {
           </p>
           <StatusBar daysLeft={daysLeft} className="mb-4" />
 
-          {penaltyInfo && !doc.resolvido && daysLeft <= 90 && (
-            <div className="bg-destructive/5 rounded-lg p-4 mb-4">
-              <p className="text-sm font-body text-muted-foreground mb-1">Se não renovar até lá:</p>
-              <p className="font-display font-bold text-lg text-destructive">Multa estimada: {penaltyInfo.penalty}</p>
-              {penaltyInfo.points && <p className="text-sm font-body text-muted-foreground">+ {penaltyInfo.points}</p>}
-              {penaltyInfo.extras?.map((e) => (
-                <p key={e} className="text-sm font-body text-muted-foreground">+ {e}</p>
-              ))}
-            </div>
-          )}
+          {penaltyInfo && !doc.resolvido && daysLeft <= 90 && (() => {
+            const match = penaltyInfo.penalty.match(/[\d.,]+/);
+            const penaltyValue = match ? parseFloat(match[0].replace(".", "").replace(",", ".")) : 0;
+            return penaltyValue > 0 ? (
+              <div className="mb-4">
+                <PenaltyCalculator
+                  basePenalty={penaltyValue}
+                  daysLeft={daysLeft}
+                  penaltyLabel={penaltyInfo.penalty}
+                  extras={penaltyInfo.extras}
+                  points={penaltyInfo.points}
+                />
+              </div>
+            ) : (
+              <div className="bg-destructive/5 rounded-lg p-4 mb-4">
+                <p className="text-sm font-body text-muted-foreground mb-1">Se não renovar até lá:</p>
+                <p className="font-display font-bold text-lg text-destructive">{penaltyInfo.penalty}</p>
+                {penaltyInfo.extras?.map((e) => (
+                  <p key={e} className="text-sm font-body text-muted-foreground">+ {e}</p>
+                ))}
+              </div>
+            );
+          })()}
 
           <Button
             variant={doc.resolvido ? "outline" : "success"}

@@ -118,3 +118,75 @@
     font-family: 'IBM Plex Sans', sans-serif;
   }
 }
+
+/* Flip Counter Animations */
+@layer components {
+  .flip-digit-container {
+    @apply inline-block relative;
+    perspective: 200px;
+  }
+
+  .flip-digit {
+    @apply inline-flex items-center justify-center relative;
+    min-width: 0.65em;
+  }
+
+  .flip-digit-face {
+    @apply inline-block;
+    backface-visibility: hidden;
+  }
+
+  .flip-digit-face.flip-out {
+    animation: flip-digit-out 0.3s ease-in forwards;
+  }
+
+  .flip-digit-face.flip-in {
+    @apply absolute inset-0 flex items-center justify-center;
+    animation: flip-digit-in 0.3s ease-out forwards;
+  }
+
+  .flip-separator {
+    @apply inline-block;
+    min-width: 0.25em;
+    text-align: center;
+  }
+
+  .penalty-calculator {
+    @apply bg-card rounded-lg p-5 shadow-card border-l-4 border-l-destructive;
+  }
+
+  .penalty-toggle {
+    @apply h-10 w-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 active:scale-90;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .penalty-toggle-cost {
+    @apply bg-destructive/10;
+  }
+
+  .penalty-toggle-savings {
+    @apply bg-success/10;
+  }
+}
+
+@keyframes flip-digit-out {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flip-digit-in {
+  0% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
