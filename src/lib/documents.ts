@@ -73,11 +73,11 @@ export const RENEWAL_GUIDES: Partial<Record<DocumentType, { steps: RenewalStep[]
   },
 };
 
-export const PENALTY_INFO: Partial<Record<DocumentType, { penalty: string; points?: string; extras?: string[] }>> = {
-  CNH: { penalty: "R$ 293,47", points: "5 pontos na carteira", extras: ["Risco de apreensão do veículo", "Infração gravíssima"] },
-  CRLV: { penalty: "R$ 293,47", extras: ["Veículo pode ser apreendido", "Responsabilidade civil em acidentes"] },
-  IPVA: { penalty: "Multa de 0,33% ao dia + juros", extras: ["Veículo não pode ser licenciado", "Pode ir a dívida ativa"] },
-  PASSAPORTE: { penalty: "Viagem cancelada", extras: ["Prejuízo médio: R$ 3.000", "Stress e transtorno"] },
+export const PENALTY_INFO: Partial<Record<DocumentType, { penalty: string; estimatedValue?: number; points?: string; extras?: string[] }>> = {
+  CNH: { penalty: "R$ 293,47", estimatedValue: 293.47, points: "5 pontos na carteira", extras: ["Risco de apreensão do veículo", "Infração gravíssima"] },
+  CRLV: { penalty: "R$ 293,47", estimatedValue: 293.47, extras: ["Veículo pode ser apreendido", "Responsabilidade civil em acidentes"] },
+  IPVA: { penalty: "Multa de 0,33% ao dia + juros", estimatedValue: 450, extras: ["Veículo não pode ser licenciado", "Pode ir a dívida ativa"] },
+  PASSAPORTE: { penalty: "Viagem cancelada", estimatedValue: 3000, extras: ["Prejuízo médio: R$ 3.000", "Stress e transtorno"] },
 };
 
 export function getDaysUntilExpiry(expiryDate: string): number {
