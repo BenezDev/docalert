@@ -14,7 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alertas_configuracao: {
+        Row: {
+          ativo: boolean
+          dias_antes: number
+          documento_id: string
+          id: string
+          usuario_id: string
+          via_email: boolean
+        }
+        Insert: {
+          ativo?: boolean
+          dias_antes: number
+          documento_id: string
+          id?: string
+          usuario_id: string
+          via_email?: boolean
+        }
+        Update: {
+          ativo?: boolean
+          dias_antes?: number
+          documento_id?: string
+          id?: string
+          usuario_id?: string
+          via_email?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertas_configuracao_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentos: {
+        Row: {
+          apelido: string | null
+          atualizado_em: string
+          criado_em: string
+          data_emissao: string | null
+          data_vencimento: string
+          extra: Json | null
+          id: string
+          numero_documento: string | null
+          observacoes: string | null
+          resolvido: boolean
+          tipo: string
+          usuario_id: string
+        }
+        Insert: {
+          apelido?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          data_emissao?: string | null
+          data_vencimento: string
+          extra?: Json | null
+          id?: string
+          numero_documento?: string | null
+          observacoes?: string | null
+          resolvido?: boolean
+          tipo: string
+          usuario_id: string
+        }
+        Update: {
+          apelido?: string | null
+          atualizado_em?: string
+          criado_em?: string
+          data_emissao?: string | null
+          data_vencimento?: string
+          extra?: Json | null
+          id?: string
+          numero_documento?: string | null
+          observacoes?: string | null
+          resolvido?: boolean
+          tipo?: string
+          usuario_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          criado_em: string
+          email: string | null
+          id: string
+          nome: string | null
+          telefone: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          criado_em?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          telefone?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          criado_em?: string
+          email?: string | null
+          id?: string
+          nome?: string | null
+          telefone?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

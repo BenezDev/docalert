@@ -30,13 +30,14 @@ export default function DocumentDetailPage() {
   const penaltyInfo = PENALTY_INFO[doc.tipo];
   const guide = RENEWAL_GUIDES[doc.tipo];
 
-  const handleDelete = () => {
-    deleteDocument(doc.id);
+  const handleDelete = async () => {
+    await deleteDocument(doc.id);
     navigate("/dashboard");
   };
 
-  const handleResolve = () => {
-    updateDocument(doc.id, { resolvido: !doc.resolvido });
+  const handleResolve = async () => {
+    await updateDocument(doc.id, { resolvido: !doc.resolvido });
+  };
   };
 
   return (
@@ -171,3 +172,4 @@ export default function DocumentDetailPage() {
     </DashboardLayout>
   );
 }
+

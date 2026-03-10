@@ -31,9 +31,9 @@ export default function AddDocumentPage() {
   const { addDocument } = useDocs();
   const navigate = useNavigate();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!tipo || !dataVenc) return;
-    addDocument({
+    await addDocument({
       tipo,
       apelido: apelido || undefined,
       numero_documento: numero || undefined,
