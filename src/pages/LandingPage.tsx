@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
+import dashboardMockup from "@/assets/dashboard-mockup.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
