@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
+import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -22,15 +24,24 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirm) return;
+    if (password !== confirm) { toast.error("As senhas não coincidem"); return; }
     if (!agreed) return;
     setLoading(true);
-    try {
-      await signup(name, email, password);
+    const result = await signup(name, email, password);
+    setLoading(false);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Conta criada! Verifique seu email para confirmar.");
       navigate("/dashboard");
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleGoogle = async () => {
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (error) toast.error("Erro ao conectar com Google");
   };
 
   return (
@@ -59,31 +70,15 @@ export default function SignupPage() {
             <div>
               <Label className="font-body">Senha</Label>
               <div className="relative">
-                <Input
-                  type={showPw ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  onClick={() => setShowPw(!showPw)}
-                >
+                <Input type={showPw ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <div>
               <Label className="font-body">Confirmar senha</Label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-              />
+              <Input type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
               {confirm && password !== confirm && (
                 <p className="text-xs text-destructive mt-1 font-body">As senhas não coincidem</p>
               )}
@@ -106,7 +101,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <Button variant="outline" className="w-full font-body">
+          <Button variant="outline" className="w-full font-body" onClick={handleGoogle}>
             Cadastrar com Google
           </Button>
 
