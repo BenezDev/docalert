@@ -75,8 +75,7 @@ export default function DocumentDetailPage() {
           <StatusBar daysLeft={daysLeft} className="mb-4" />
 
           {penaltyInfo && !doc.resolvido && daysLeft <= 90 && (() => {
-            const match = penaltyInfo.penalty.match(/[\d.,]+/);
-            const penaltyValue = match ? parseFloat(match[0].replace(".", "").replace(",", ".")) : 0;
+            const penaltyValue = penaltyInfo.estimatedValue ?? 0;
             return penaltyValue > 0 ? (
               <div className="mb-4">
                 <PenaltyCalculator
