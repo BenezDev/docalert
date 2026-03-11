@@ -5,11 +5,12 @@ import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
 import { useAuth } from "@/hooks/useAuth";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, getStatusLevel, PENALTY_INFO } from "@/lib/documents";
-import { Plus, CheckCircle2, AlertTriangle, AlertCircle, DollarSign, ArrowRight } from "lucide-react";
+import { Plus, CheckCircle2, AlertTriangle, AlertCircle, DollarSign, ArrowRight, FileText, Shield } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { documents } = useDocs();
+  const { documents, isLoading } = useDocs();
   const navigate = useNavigate();
 
   const docsWithDays = documents.map((d) => ({
@@ -40,6 +41,76 @@ export default function DashboardPage() {
     { label: "Urgente", count: critical.length, icon: AlertCircle, color: "text-destructive", border: "border-l-destructive" },
     { label: "Economia potencial", count: null, value: `R$ ${totalSavings.toFixed(0)}`, icon: DollarSign, color: "text-secondary", border: "border-l-secondary" },
   ];
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="mb-8">
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-5 w-80" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card rounded-lg p-5 shadow-card border-l-4 border-l-muted">
+              <Skeleton className="h-4 w-20 mb-3" />
+              <Skeleton className="h-9 w-16 mb-1" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          ))}
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-card rounded-lg p-5 shadow-card">
+              <Skeleton className="h-5 w-32 mb-3" />
+              <Skeleton className="h-6 w-20 mb-3" />
+              <Skeleton className="h-4 w-40 mb-3" />
+              <Skeleton className="h-2 w-full" />
+            </div>
+          ))}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Empty state
+  if (documents.length === 0) {
+    return (
+      <DashboardLayout>
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold">
+            {greeting}, {user?.name?.split(" ")[0]}! 👋
+          </h1>
+        </div>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="h-20 w-20 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
+            <Shield className="h-10 w-10 text-secondary" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Nenhum documento cadastrado</h2>
+          <p className="text-muted-foreground font-body mb-6 max-w-md">
+            Adicione seus documentos para receber alertas antes de vencer e nunca mais pagar multa por atraso.
+          </p>
+          <Button variant="hero" size="lg" onClick={() => navigate("/dashboard/adicionar")}>
+            <Plus className="h-5 w-5 mr-2" />
+            Adicionar primeiro documento
+          </Button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 max-w-2xl w-full">
+            {[
+              { icon: FileText, title: "Cadastre", desc: "Adicione seus documentos com data de vencimento" },
+              { icon: AlertTriangle, title: "Receba alertas", desc: "Avisamos 90, 30 e 7 dias antes" },
+              { icon: CheckCircle2, title: "Fique em dia", desc: "Nunca mais pague multa por atraso" },
+            ].map((step) => (
+              <div key={step.title} className="bg-card rounded-lg p-4 shadow-card text-center">
+                <step.icon className="h-6 w-6 text-secondary mx-auto mb-2" />
+                <p className="font-display font-semibold text-sm mb-1">{step.title}</p>
+                <p className="text-xs text-muted-foreground font-body">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

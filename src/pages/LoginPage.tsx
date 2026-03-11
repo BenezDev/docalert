@@ -61,7 +61,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="text-right">
-              <a href="#" className="text-sm text-secondary hover:underline font-body">Esqueci minha senha</a>
+              <Link to="/esqueci-senha" className="text-sm text-secondary hover:underline font-body">Esqueci minha senha</Link>
             </div>
             <Button type="submit" variant="hero" className="w-full" disabled={loading}>
               {loading ? "Entrando..." : "Entrar"}

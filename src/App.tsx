@@ -8,6 +8,8 @@ import { DocsProvider } from "@/hooks/useDocs";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardPage from "./pages/DashboardPage";
 import AddDocumentPage from "./pages/AddDocumentPage";
 import DocumentDetailPage from "./pages/DocumentDetailPage";
@@ -29,6 +31,8 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<SignupPage />} />
+      <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/dashboard/adicionar" element={<ProtectedRoute><AddDocumentPage /></ProtectedRoute>} />
       <Route path="/dashboard/documento/:id" element={<ProtectedRoute><DocumentDetailPage /></ProtectedRoute>} />
