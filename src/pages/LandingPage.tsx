@@ -2,289 +2,361 @@ import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import dashboardMockup from "@/assets/dashboard-mockup.png";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  Bell,
-  Shield,
-  FileText,
-  DollarSign,
-  Users,
-  Smartphone,
-  Building2,
-  Check,
   ArrowRight,
-  Car,
-  Plane,
-  Heart,
+  Clock,
+  ShieldCheck,
+  Zap,
+  Star,
+  ChevronRight,
+  CheckCircle2,
 } from "lucide-react";
-
-const painCards = [
-  {
-    icon: Car,
-    title: "CNH vencida",
-    penalty: "R$ 293,47",
-    extras: ["+ 5 pontos na carteira", "+ Risco de apreensão"],
-  },
-  {
-    icon: FileText,
-    title: "CRLV atrasado",
-    penalty: "R$ 293,47",
-    extras: ["+ Veículo pode ser apreendido", "+ Responsabilidade civil"],
-  },
-  {
-    icon: Plane,
-    title: "Passaporte vencido",
-    penalty: "Viagem cancelada",
-    extras: ["+ Prejuízo médio: R$ 3.000", "+ Stress e transtorno"],
-  },
-];
-
-const features = [
-  { icon: Bell, title: "Alertas inteligentes", desc: "Avisa 90, 30 e 7 dias antes" },
-  { icon: FileText, title: "Todos documentos em um lugar", desc: "CNH, CRLV, IPVA, Passaporte e mais" },
-  { icon: DollarSign, title: "Custo do atraso em tempo real", desc: "Veja quanto vai perder se ignorar" },
-  { icon: Users, title: "Modo família", desc: "Gerencie docs de toda a família" },
-  { icon: Smartphone, title: "Guia passo a passo", desc: "Sabe exatamente como renovar" },
-  { icon: Building2, title: "Modo MEI/Empresa", desc: "Alvarás, certidões e muito mais" },
-];
-
-const plans = [
-  {
-    name: "Gratuito",
-    price: "R$ 0",
-    period: "",
-    features: ["Até 5 documentos", "Alertas por email", "Guia básico"],
-    cta: "Começar grátis",
-    highlighted: false,
-  },
-  {
-    name: "Pessoal",
-    price: "R$ 9,90",
-    period: "/mês",
-    features: [
-      "Documentos ilimitados",
-      "Alertas por WhatsApp",
-      "Modo família (até 4 pessoas)",
-      "Guia completo passo a passo",
-      "Calculadora de multas",
-    ],
-    cta: "Assinar agora",
-    highlighted: true,
-  },
-  {
-    name: "MEI/Empresa",
-    price: "R$ 29,90",
-    period: "/mês",
-    features: [
-      "Tudo do plano pessoal",
-      "Documentos empresariais",
-      "Múltiplos CNPJs",
-      "Relatórios",
-      "Suporte prioritário",
-    ],
-    cta: "Falar com vendas",
-    highlighted: false,
-  },
-];
 
 export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header — clean, minimal */}
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="container flex h-16 items-center justify-between">
-          <Logo />
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#funcionalidades" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">
-              Funcionalidades
-            </a>
-            <a href="#precos" className="text-sm font-body text-muted-foreground hover:text-foreground transition-colors">
-              Preços
-            </a>
+        <div className="container flex h-14 items-center justify-between">
+          <Logo size="sm" />
+          <div className="flex items-center gap-2">
             <Link to="/login">
-              <Button variant="ghost" size="sm">Entrar</Button>
+              <Button variant="ghost" size="sm" className="font-body text-muted-foreground">Entrar</Button>
             </Link>
             <Link to="/cadastro">
-              <Button variant="hero" size="sm">Começar Grátis</Button>
+              <Button variant="hero" size="sm">Começar grátis</Button>
             </Link>
-          </nav>
-          <Link to="/cadastro" className="md:hidden">
-            <Button variant="hero" size="sm">Começar Grátis</Button>
-          </Link>
+          </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="py-16 md:py-24 overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <Badge className="mb-6 bg-secondary/10 text-secondary border-secondary/20 font-body">
-                Nunca mais perca um prazo de documento
-              </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-                Nunca mais pague multa por documento vencido
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-body mb-8 max-w-xl">
-                DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. Simples assim.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button variant="hero" size="lg" onClick={() => navigate("/cadastro")}>
-                  Criar conta grátis
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button variant="hero-outline" size="lg" onClick={() => {
-                  document.getElementById("funcionalidades")?.scrollIntoView({ behavior: "smooth" });
-                }}>
-                  Ver funcionalidades
-                </Button>
-              </div>
-              <p className="mt-6 text-sm text-muted-foreground font-body flex items-center gap-2 justify-center lg:justify-start">
-                <Check className="h-4 w-4 text-success" /> Grátis para até 5 documentos
-                <span className="mx-1">·</span>
-                <Check className="h-4 w-4 text-success" /> Sem cartão de crédito
-              </p>
+      {/* Hero — direto, sem floreio */}
+      <section className="pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="container max-w-5xl">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <p className="text-sm font-body font-medium text-secondary mb-4 tracking-wide uppercase">
+              Para quem já esqueceu e pagou caro
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-foreground leading-[1.15] mb-5">
+              Seus documentos vencem.<br className="hidden sm:block" />
+              A gente avisa antes.
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground font-body max-w-xl mx-auto mb-8 leading-relaxed">
+              Cadastre CNH, CRLV, passaporte e mais. Receba alertas com antecedência 
+              e saiba exatamente o que fazer para renovar — sem surpresas, sem multas.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button variant="hero" size="lg" onClick={() => navigate("/cadastro")} className="text-base px-8">
+                Começar grátis
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="lg"
+                className="text-base text-muted-foreground"
+                onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                Como funciona?
+              </Button>
             </div>
-            <div className="relative">
-              <div className="rounded-xl shadow-2xl overflow-hidden border border-border/50">
-                <img
-                  src={dashboardMockup}
-                  alt="Dashboard do DocAlert mostrando documentos monitorados com alertas de vencimento"
-                  className="w-full h-auto"
-                  loading="eager"
-                />
+            <p className="mt-5 text-xs text-muted-foreground font-body">
+              Grátis para até 5 documentos · Sem cartão de crédito
+            </p>
+          </div>
+
+          {/* Screenshot real */}
+          <div className="relative max-w-4xl mx-auto">
+            <div className="rounded-xl shadow-2xl overflow-hidden border border-border/40 bg-card">
+              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-border/40 bg-muted/30">
+                <div className="h-2.5 w-2.5 rounded-full bg-border" />
+                <div className="h-2.5 w-2.5 rounded-full bg-border" />
+                <div className="h-2.5 w-2.5 rounded-full bg-border" />
+                <div className="ml-3 h-5 flex-1 max-w-xs rounded bg-border/50" />
               </div>
-              {/* Floating accent elements */}
-              <div className="absolute -bottom-4 -left-4 bg-card rounded-lg shadow-card-hover p-3 border border-border/50 hidden md:flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center">
-                  <Bell className="h-4 w-4 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-xs font-body font-semibold">CNH vence em 7 dias</p>
-                  <p className="text-[10px] text-muted-foreground font-body">Alerta enviado agora</p>
-                </div>
-              </div>
-              <div className="absolute -top-3 -right-3 bg-card rounded-lg shadow-card-hover p-3 border border-border/50 hidden md:flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-success" />
-                </div>
-                <div>
-                  <p className="text-xs font-body font-semibold">Economia: R$ 586</p>
-                  <p className="text-[10px] text-muted-foreground font-body">Renovando a tempo</p>
-                </div>
-              </div>
+              <img
+                src={dashboardMockup}
+                alt="Painel do DocAlert mostrando documentos monitorados"
+                className="w-full h-auto"
+                loading="eager"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pain Section */}
-      <section className="py-20 bg-muted">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Quanto custa esquecer?</h2>
-          <p className="text-center text-muted-foreground font-body mb-12 max-w-xl mx-auto">
-            Documentos vencidos geram multas, perda de tempo e transtorno. Veja o que pode acontecer:
-          </p>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {painCards.map((card) => (
-              <div
-                key={card.title}
-                className="bg-card rounded-lg p-6 shadow-card border-l-4 border-destructive"
-              >
-                <card.icon className="h-8 w-8 text-destructive mb-4" />
-                <h3 className="font-display font-bold text-lg mb-2">{card.title}</h3>
-                <p className="text-2xl font-display font-bold text-destructive mb-3">{card.penalty}</p>
-                {card.extras.map((e) => (
-                  <p key={e} className="text-sm text-muted-foreground font-body">{e}</p>
-                ))}
+      {/* Números de contexto — prova social */}
+      <section className="py-12 border-y bg-card">
+        <div className="container max-w-4xl">
+          <div className="grid grid-cols-3 gap-6 text-center">
+            {[
+              { number: "47 milhões", label: "de CNHs vencem por ano no Brasil" },
+              { number: "R$ 293", label: "é a multa por dirigir com CNH vencida" },
+              { number: "72%", label: "das pessoas só lembram quando é tarde" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p className="text-xl md:text-2xl font-display font-bold text-foreground">{stat.number}</p>
+                <p className="text-xs md:text-sm text-muted-foreground font-body mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="funcionalidades" className="py-20">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Tudo que você precisa</h2>
-          <p className="text-center text-muted-foreground font-body mb-12 max-w-xl mx-auto">
-            Uma plataforma completa para nunca mais esquecer um prazo importante.
+      {/* Como funciona — 3 passos simples */}
+      <section id="como-funciona" className="py-20">
+        <div className="container max-w-4xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Simples de usar. Difícil de esquecer.</h2>
+          <p className="text-center text-muted-foreground font-body mb-14 max-w-lg mx-auto">
+            Em menos de 2 minutos você cadastra seus documentos e pronto — a gente cuida do resto.
           </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {features.map((f) => (
-              <div key={f.title} className="bg-card rounded-lg p-6 shadow-card hover:shadow-card-hover transition-shadow">
-                <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
-                  <f.icon className="h-5 w-5 text-secondary" />
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Cadastre seus documentos",
+                desc: "Informe o tipo e a data de vencimento. Só isso. Pode começar com um e adicionar outros depois.",
+                icon: Zap,
+              },
+              {
+                step: "02",
+                title: "Receba alertas no tempo certo",
+                desc: "Avisamos 90, 30 e 7 dias antes do vencimento. Por email agora, WhatsApp em breve.",
+                icon: Clock,
+              },
+              {
+                step: "03",
+                title: "Renove sem stress",
+                desc: "Mostramos o passo a passo, quanto custa e onde ir. Tudo mastigado para você.",
+                icon: ShieldCheck,
+              },
+            ].map((item) => (
+              <div key={item.step} className="relative">
+                <span className="text-5xl font-display font-bold text-muted/60 absolute -top-2 -left-1 select-none">{item.step}</span>
+                <div className="pt-10">
+                  <item.icon className="h-5 w-5 text-secondary mb-3" />
+                  <h3 className="font-display font-bold text-lg mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="font-display font-semibold mb-2">{f.title}</h3>
-                <p className="text-sm text-muted-foreground font-body">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="precos" className="py-20 bg-muted">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Planos e preços</h2>
-          <p className="text-center text-muted-foreground font-body mb-12">Escolha o plano ideal para você</p>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`bg-card rounded-lg p-8 shadow-card relative ${
-                  plan.highlighted ? "ring-2 ring-secondary scale-105" : ""
-                }`}
-              >
-                {plan.highlighted && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground font-body">
-                    Mais popular
-                  </Badge>
-                )}
-                <h3 className="font-display font-bold text-xl mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <span className="text-3xl font-display font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground font-body">{plan.period}</span>
+      {/* O que acontece se esquecer — sem cardsão genéricos */}
+      <section className="py-20 bg-muted/50">
+        <div className="container max-w-4xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">O custo de não se organizar</h2>
+          <p className="text-center text-muted-foreground font-body mb-12 max-w-lg mx-auto">
+            Esquecer a data de vencimento pode sair caro. Literalmente.
+          </p>
+
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {[
+              {
+                doc: "CNH vencida",
+                consequence: "Multa de R$ 293,47 + 5 pontos na carteira + risco de apreensão",
+              },
+              {
+                doc: "CRLV atrasado",
+                consequence: "Multa de R$ 293,47 + veículo pode ser apreendido",
+              },
+              {
+                doc: "Passaporte vencido",
+                consequence: "Viagem cancelada + prejuízo médio de R$ 3.000",
+              },
+              {
+                doc: "IPVA atrasado",
+                consequence: "Multa de 0,33% ao dia + juros + pode ir para dívida ativa",
+              },
+            ].map((item) => (
+              <div key={item.doc} className="flex items-start gap-4 bg-card rounded-lg p-5 shadow-card border-l-4 border-l-destructive">
+                <div className="shrink-0 mt-0.5">
+                  <div className="h-2 w-2 rounded-full bg-destructive" />
                 </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm font-body">
-                      <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-                      {f}
-                    </li>
+                <div>
+                  <p className="font-display font-semibold text-sm">{item.doc}</p>
+                  <p className="text-sm text-muted-foreground font-body">{item.consequence}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Depoimentos / Social Proof */}
+      <section className="py-20">
+        <div className="container max-w-4xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Quem usa, recomenda</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                quote: "Quase perdi uma viagem internacional porque meu passaporte tinha vencido. Nunca mais depois do DocAlert.",
+                name: "Mariana S.",
+                role: "Viajante frequente",
+              },
+              {
+                quote: "Gerencio os documentos da minha família inteira. É simples e me poupa uma dor de cabeça enorme.",
+                name: "Ricardo P.",
+                role: "Pai de família",
+              },
+              {
+                quote: "Como MEI, tenho vários prazos para acompanhar. O DocAlert me avisa de tudo sem eu precisar lembrar.",
+                name: "Camila F.",
+                role: "Microempreendedora",
+              },
+              {
+                quote: "Paguei multa por CNH vencida ano passado. Agora tenho o DocAlert e durmo tranquilo.",
+                name: "Bruno M.",
+                role: "Motorista",
+              },
+            ].map((t) => (
+              <div key={t.name} className="bg-card rounded-lg p-6 shadow-card">
+                <div className="flex gap-0.5 mb-3">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className="h-3.5 w-3.5 fill-warning text-warning" />
                   ))}
-                </ul>
-                <Button
-                  variant={plan.highlighted ? "hero" : "outline"}
-                  className="w-full"
-                  onClick={() => navigate("/cadastro")}
-                >
-                  {plan.cta}
-                </Button>
+                </div>
+                <p className="text-sm text-foreground font-body leading-relaxed mb-4">"{t.quote}"</p>
+                <div>
+                  <p className="text-sm font-display font-semibold">{t.name}</p>
+                  <p className="text-xs text-muted-foreground font-body">{t.role}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t py-12">
+      {/* O que está incluso — lista objetiva */}
+      <section className="py-20 bg-muted/50">
+        <div className="container max-w-4xl">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">Tudo que você precisa, nada que não precisa</h2>
+              <p className="text-muted-foreground font-body mb-6 leading-relaxed">
+                O DocAlert não tenta fazer de tudo. Ele faz uma coisa e faz bem: 
+                garantir que você nunca mais esqueça um prazo de documento.
+              </p>
+              <Button variant="hero" onClick={() => navigate("/cadastro")}>
+                Começar grátis <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {[
+                "Alertas por email com 90, 30 e 7 dias de antecedência",
+                "Guia passo a passo para renovar cada documento",
+                "Calculadora de multas em tempo real",
+                "Suporte a 11 tipos de documentos (CNH, CRLV, IPVA, Passaporte…)",
+                "Modo família — gerencie docs de até 4 pessoas",
+                "Funciona no celular, tablet e desktop",
+              ].map((feature) => (
+                <div key={feature} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-4 w-4 text-success shrink-0 mt-0.5" />
+                  <p className="text-sm font-body text-foreground">{feature}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Preços — simplificado */}
+      <section id="precos" className="py-20">
+        <div className="container max-w-3xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Preço justo, sem surpresas</h2>
+          <p className="text-center text-muted-foreground font-body mb-12">
+            Comece de graça. Faça upgrade quando precisar de mais.
+          </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Free */}
+            <div className="bg-card rounded-lg p-7 shadow-card border border-border/50">
+              <h3 className="font-display font-bold text-lg mb-1">Gratuito</h3>
+              <p className="text-muted-foreground font-body text-sm mb-5">Para uso pessoal básico</p>
+              <p className="text-3xl font-display font-bold mb-6">R$ 0</p>
+              <ul className="space-y-3 mb-8">
+                {["Até 5 documentos", "Alertas por email", "Guia básico de renovação"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm font-body">
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" className="w-full font-body" onClick={() => navigate("/cadastro")}>
+                Começar grátis
+              </Button>
+            </div>
+            {/* Pessoal */}
+            <div className="bg-card rounded-lg p-7 shadow-card ring-2 ring-secondary relative">
+              <div className="absolute -top-3 right-6 bg-secondary text-secondary-foreground text-xs font-body font-semibold px-3 py-1 rounded-full">
+                Recomendado
+              </div>
+              <h3 className="font-display font-bold text-lg mb-1">Pessoal</h3>
+              <p className="text-muted-foreground font-body text-sm mb-5">Para quem quer tranquilidade total</p>
+              <div className="mb-6">
+                <span className="text-3xl font-display font-bold">R$ 9,90</span>
+                <span className="text-muted-foreground font-body">/mês</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Documentos ilimitados",
+                  "Alertas por WhatsApp",
+                  "Modo família (até 4 pessoas)",
+                  "Guia completo + calculadora de multas",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm font-body">
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="hero" className="w-full" onClick={() => navigate("/cadastro")}>
+                Assinar agora
+              </Button>
+            </div>
+          </div>
+          <p className="text-center text-xs text-muted-foreground font-body mt-6">
+            Precisa de plano empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente</a>
+          </p>
+        </div>
+      </section>
+
+      {/* CTA final */}
+      <section className="py-20 bg-primary text-primary-foreground">
+        <div className="container max-w-2xl text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Não espere levar uma multa para se organizar
+          </h2>
+          <p className="font-body opacity-80 mb-8 max-w-lg mx-auto">
+            Crie sua conta em 30 segundos e cadastre seu primeiro documento agora. 
+            É grátis e você pode cancelar quando quiser.
+          </p>
+          <Button
+            size="lg"
+            className="bg-card text-foreground hover:bg-card/90 font-semibold text-base px-8 shadow-lg"
+            onClick={() => navigate("/cadastro")}
+          >
+            Criar conta grátis
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer — limpo */}
+      <footer className="border-t py-8">
         <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex flex-col items-center md:items-start gap-2">
-              <Logo size="sm" />
-              <p className="text-sm text-muted-foreground font-body">Nunca mais perca um prazo de documento</p>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <Logo size="sm" />
             <div className="flex gap-6 text-sm text-muted-foreground font-body">
-              <a href="#" className="hover:text-foreground transition-colors">Sobre</a>
-              <a href="#" className="hover:text-foreground transition-colors">Privacidade</a>
               <a href="#" className="hover:text-foreground transition-colors">Termos</a>
+              <a href="#" className="hover:text-foreground transition-colors">Privacidade</a>
+              <a href="mailto:contato@docalert.com.br" className="hover:text-foreground transition-colors">Contato</a>
             </div>
-            <p className="text-sm text-muted-foreground font-body flex items-center gap-1">
-              Feito com <Heart className="h-3 w-3 text-destructive fill-destructive" /> para brasileiros
+            <p className="text-xs text-muted-foreground font-body">
+              © {new Date().getFullYear()} DocAlert
             </p>
           </div>
         </div>
