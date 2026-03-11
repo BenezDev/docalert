@@ -1,23 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <title>DocAlert - Nunca mais perca um prazo de documento</title>
-    <meta name="description" content="DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. CNH, CRLV, IPVA, Passaporte e mais.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- SEO -->
+    <title>DocAlert — Nunca mais pague multa por documento vencido</title>
+    <meta name="description" content="DocAlert monitora seus documentos pessoais e empresariais, avisa antes de vencer e te guia para renovar. CNH, CRLV, Passaporte e mais." />
+    <meta name="keywords" content="documento vencido, CNH, CRLV, IPVA, passaporte, alerta vencimento, renovar documento" />
     <meta name="author" content="DocAlert" />
-    
-    
+    <link rel="canonical" href="https://docalert.lovable.app" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:title" content="DocAlert — Nunca mais pague multa por documento vencido" />
+    <meta property="og:description" content="Monitore seus documentos, receba alertas antes de vencer e saiba exatamente como renovar." />
+    <meta property="og:url" content="https://docalert.lovable.app" />
+    <meta property="og:site_name" content="DocAlert" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:image" content="https://docalert.lovable.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="og:title" content="DocAlert - Nunca mais perca um prazo de documento">
-  <meta name="twitter:title" content="DocAlert - Nunca mais perca um prazo de documento">
-  <meta property="og:description" content="DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. CNH, CRLV, IPVA, Passaporte e mais.">
-  <meta name="twitter:description" content="DocAlert monitora seus documentos, avisa antes de vencer e te guia para renovar. CNH, CRLV, IPVA, Passaporte e mais.">
-  <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ca5c6fbf-9961-4c4b-8b55-c72572649d8a?Expires=1773272688&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=IDaDbaI6XlOqb9rSgmqe8LsUK03m%2FSKHi9y05rUK2v6W9S%2Fy9LoQawdVXX2dACzgeI95VeK6WLjgMs4RZDaH3fUqo0a6IfwoGIFQsRDCVUjicaRqwEz9nVOc0SJW%2BvLAcG4Zjy7jSK8cAa%2FD2u1lKqBpm0Xv%2FUCVc8cEmIu319MGQbzw6U%2FsMgsDCyvwguVlyuHGdm7vjDx4IXKQQhXEWzsvNt7bMi0Izo62anRkvNsIGMifd2FJIVs7%2FmYY5wxVg97m6nHV4ZO3WVo2ibR0XhpFeyfmXNF6E0%2Fgohz0txp4n%2F%2BeRj%2FmyR%2FJQrfIPZBKKGNl4ikpMN2BLHpk3mM4kg%3D%3D">
-  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ca5c6fbf-9961-4c4b-8b55-c72572649d8a?Expires=1773272688&amp;GoogleAccessId=go-api-on-aws%40gpt-engineer-390607.iam.gserviceaccount.com&amp;Signature=IDaDbaI6XlOqb9rSgmqe8LsUK03m%2FSKHi9y05rUK2v6W9S%2Fy9LoQawdVXX2dACzgeI95VeK6WLjgMs4RZDaH3fUqo0a6IfwoGIFQsRDCVUjicaRqwEz9nVOc0SJW%2BvLAcG4Zjy7jSK8cAa%2FD2u1lKqBpm0Xv%2FUCVc8cEmIu319MGQbzw6U%2FsMgsDCyvwguVlyuHGdm7vjDx4IXKQQhXEWzsvNt7bMi0Izo62anRkvNsIGMifd2FJIVs7%2FmYY5wxVg97m6nHV4ZO3WVo2ibR0XhpFeyfmXNF6E0%2Fgohz0txp4n%2F%2BeRj%2FmyR%2FJQrfIPZBKKGNl4ikpMN2BLHpk3mM4kg%3D%3D">
-</head>
+    <meta name="twitter:title" content="DocAlert — Nunca mais pague multa por documento vencido" />
+    <meta name="twitter:description" content="Monitore seus documentos, receba alertas antes de vencer e saiba exatamente como renovar." />
+    <meta name="twitter:image" content="https://docalert.lovable.app/og-image.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1B3A6B" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DocAlert" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "DocAlert",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "description": "Monitore seus documentos pessoais e empresariais. Receba alertas antes de vencer e saiba como renovar.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
