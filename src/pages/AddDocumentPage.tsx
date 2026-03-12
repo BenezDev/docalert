@@ -9,11 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDocs } from "@/hooks/useDocs";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
-import { CalendarIcon, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const steps = ["Tipo", "Dados", "Alertas"];
 
