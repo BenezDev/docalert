@@ -147,7 +147,7 @@ export default function SettingsPage() {
                 <h3 className="font-display font-bold">Plano Gratuito</h3>
               </div>
               <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Até 5 documentos</li>
+                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> 1 documento</li>
                 <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Alertas por email</li>
                 <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Guia básico</li>
               </ul>

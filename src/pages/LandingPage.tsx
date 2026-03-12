@@ -62,7 +62,7 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="mt-5 text-xs text-muted-foreground font-body">
-              Grátis para até 5 documentos · Sem cartão de crédito
+              Grátis para 1 documento · Plano completo por R$ 9,90/mês
             </p>
           </div>
 
@@ -278,7 +278,7 @@ export default function LandingPage() {
               <p className="text-muted-foreground font-body text-sm mb-5">Para uso pessoal básico</p>
               <p className="text-3xl font-display font-bold mb-6">R$ 0</p>
               <ul className="space-y-3 mb-8">
-                {["Até 5 documentos", "Alertas por email", "Guia básico de renovação"].map((f) => (
+                {["1 documento", "Alertas por email", "Guia básico de renovação"].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm font-body">
                     <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                     {f}
