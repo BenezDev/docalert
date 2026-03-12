@@ -2,6 +2,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useDocs } from "@/hooks/useDocs";
+import { getDaysUntilExpiry } from "@/lib/documents";
 import { Bell, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -14,9 +16,12 @@ const navItems = [
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
+  const { documents } = useDocs();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const urgentCount = documents.filter((d) => !d.resolvido && getDaysUntilExpiry(d.data_vencimento) <= 30).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,11 +47,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/dashboard")}>
               <Bell className="h-4 w-4" />
-              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-body">
-                2
-              </span>
+              {urgentCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-body">
+                  {urgentCount > 9 ? "9+" : urgentCount}
+                </span>
+              )}
             </Button>
             <div className="hidden md:flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">

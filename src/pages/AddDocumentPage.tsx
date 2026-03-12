@@ -9,11 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDocs } from "@/hooks/useDocs";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
-import { CalendarIcon, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const steps = ["Tipo", "Dados", "Alertas"];
 
@@ -28,12 +31,15 @@ export default function AddDocumentPage() {
   const [alertDays, setAlertDays] = useState<number[]>([90, 30, 7]);
   const [viaEmail, setViaEmail] = useState(true);
 
+  const { user } = useAuth();
   const { addDocument } = useDocs();
   const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     if (!tipo || !dataVenc) return;
-    await addDocument({
+    setSaving(true);
+    const docId = await addDocument({
       tipo,
       apelido: apelido || undefined,
       numero_documento: numero || undefined,
@@ -42,6 +48,21 @@ export default function AddDocumentPage() {
       observacoes: obs || undefined,
       resolvido: false,
     });
+
+    if (docId && alertDays.length > 0 && user) {
+      await supabase.from("alertas_configuracao").insert(
+        alertDays.map((dias) => ({
+          documento_id: docId,
+          usuario_id: user.id,
+          dias_antes: dias,
+          via_email: viaEmail,
+          ativo: true,
+        }))
+      );
+    }
+
+    setSaving(false);
+    toast.success("Documento adicionado com sucesso!");
     navigate("/dashboard");
   };
 
@@ -218,8 +239,8 @@ export default function AddDocumentPage() {
               <Button variant="outline" onClick={() => setStep(1)}>
                 <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
               </Button>
-              <Button variant="hero" onClick={handleSave}>
-                Salvar documento
+              <Button variant="hero" onClick={handleSave} disabled={saving}>
+                {saving ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Salvando...</> : "Salvar documento"}
               </Button>
             </div>
           </div>

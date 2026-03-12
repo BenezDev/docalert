@@ -1,11 +1,22 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, PENALTY_INFO, RENEWAL_GUIDES } from "@/lib/documents";
-import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, ExternalLink } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, CalendarIcon, X, Loader2 } from "lucide-react";
 import { PenaltyCalculator } from "@/components/PenaltyCalculator";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function DocumentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +24,16 @@ export default function DocumentDetailPage() {
   const navigate = useNavigate();
 
   const doc = getDocument(id || "");
+
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [editApelido, setEditApelido] = useState("");
+  const [editNumero, setEditNumero] = useState("");
+  const [editDataVenc, setEditDataVenc] = useState<Date | undefined>();
+  const [editDataEmissao, setEditDataEmissao] = useState<Date | undefined>();
+  const [editObs, setEditObs] = useState("");
+
   if (!doc) {
     return (
       <DashboardLayout>
@@ -30,13 +51,40 @@ export default function DocumentDetailPage() {
   const penaltyInfo = PENALTY_INFO[doc.tipo];
   const guide = RENEWAL_GUIDES[doc.tipo];
 
+  const startEditing = () => {
+    setEditApelido(doc.apelido || "");
+    setEditNumero(doc.numero_documento || "");
+    setEditDataVenc(new Date(doc.data_vencimento));
+    setEditDataEmissao(doc.data_emissao ? new Date(doc.data_emissao) : undefined);
+    setEditObs(doc.observacoes || "");
+    setEditing(true);
+  };
+
+  const handleSave = async () => {
+    if (!editDataVenc) return;
+    setSaving(true);
+    await updateDocument(doc.id, {
+      apelido: editApelido || null,
+      numero_documento: editNumero || null,
+      data_vencimento: editDataVenc.toISOString().split("T")[0],
+      data_emissao: editDataEmissao?.toISOString().split("T")[0] || null,
+      observacoes: editObs || null,
+    });
+    setSaving(false);
+    setEditing(false);
+    toast.success("Documento atualizado!");
+  };
+
   const handleDelete = async () => {
+    setDeleting(true);
     await deleteDocument(doc.id);
+    toast.success("Documento removido.");
     navigate("/dashboard");
   };
 
   const handleResolve = async () => {
     await updateDocument(doc.id, { resolvido: !doc.resolvido });
+    toast.success(doc.resolvido ? "Marcado como pendente." : "Marcado como renovado!");
   };
 
   return (
@@ -58,10 +106,96 @@ export default function DocumentDetailPage() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon"><Edit className="h-4 w-4" /></Button>
-            <Button variant="outline" size="icon" onClick={handleDelete}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            {editing ? (
+              <Button variant="ghost" size="icon" onClick={() => setEditing(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button variant="outline" size="icon" onClick={startEditing}>
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir documento?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir "{doc.apelido || typeInfo?.label}"? Esta ação não pode ser desfeita.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="font-body">Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-body"
+                    disabled={deleting}
+                  >
+                    {deleting ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : null}
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
+
+        {/* Edit Form */}
+        {editing && (
+          <div className="bg-card rounded-lg p-6 shadow-card mb-6 space-y-4">
+            <h2 className="font-display font-bold text-lg mb-2">Editar documento</h2>
+            <div>
+              <Label className="font-body">Apelido</Label>
+              <Input value={editApelido} onChange={(e) => setEditApelido(e.target.value)} placeholder={typeInfo?.label} />
+            </div>
+            <div>
+              <Label className="font-body">Data de vencimento *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal font-body", !editDataVenc && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {editDataVenc ? format(editDataVenc, "dd/MM/yyyy") : "Selecione a data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={editDataVenc} onSelect={setEditDataVenc} locale={ptBR} className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label className="font-body">Número do documento</Label>
+              <Input value={editNumero} onChange={(e) => setEditNumero(e.target.value)} />
+            </div>
+            <div>
+              <Label className="font-body">Data de emissão</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal font-body", !editDataEmissao && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {editDataEmissao ? format(editDataEmissao, "dd/MM/yyyy") : "Sem data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={editDataEmissao} onSelect={setEditDataEmissao} locale={ptBR} className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label className="font-body">Observações</Label>
+              <Textarea value={editObs} onChange={(e) => setEditObs(e.target.value)} />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="hero" onClick={handleSave} disabled={saving || !editDataVenc}>
+                {saving ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Salvando...</> : "Salvar alterações"}
+              </Button>
+              <Button variant="outline" onClick={() => setEditing(false)}>Cancelar</Button>
+            </div>
+          </div>
+        )}
 
         {/* Status Card */}
         <div className="bg-card rounded-lg p-6 shadow-card border-l-4 mb-6" style={{
@@ -98,7 +232,7 @@ export default function DocumentDetailPage() {
           })()}
 
           <Button
-            variant={doc.resolvido ? "outline" : "success"}
+            variant={doc.resolvido ? "outline" : "default"}
             className="font-body"
             onClick={handleResolve}
           >
@@ -171,4 +305,3 @@ export default function DocumentDetailPage() {
     </DashboardLayout>
   );
 }
-
