@@ -30,10 +30,12 @@ export default function AddDocumentPage() {
 
   const { addDocument } = useDocs();
   const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     if (!tipo || !dataVenc) return;
-    await addDocument({
+    setSaving(true);
+    const docId = await addDocument({
       tipo,
       apelido: apelido || undefined,
       numero_documento: numero || undefined,
@@ -42,6 +44,29 @@ export default function AddDocumentPage() {
       observacoes: obs || undefined,
       resolvido: false,
     });
+
+    // Save alert configs
+    if (docId && alertDays.length > 0) {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { useAuth } = await import("@/hooks/useAuth");
+      // We already have user from context, get it directly
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        await supabase.from("alertas_configuracao").insert(
+          alertDays.map((dias) => ({
+            documento_id: docId,
+            usuario_id: authUser.id,
+            dias_antes: dias,
+            via_email: viaEmail,
+            ativo: true,
+          }))
+        );
+      }
+    }
+
+    setSaving(false);
+    const { toast } = await import("sonner");
+    toast.success("Documento adicionado com sucesso!");
     navigate("/dashboard");
   };
 
