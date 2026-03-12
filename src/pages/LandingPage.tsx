@@ -62,7 +62,7 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="mt-5 text-xs text-muted-foreground font-body">
-              Grátis para até 5 documentos · Sem cartão de crédito
+              Grátis para 1 documento · Plano completo por R$ 9,90/mês
             </p>
           </div>
 
