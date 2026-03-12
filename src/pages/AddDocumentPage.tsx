@@ -239,8 +239,8 @@ export default function AddDocumentPage() {
               <Button variant="outline" onClick={() => setStep(1)}>
                 <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
               </Button>
-              <Button variant="hero" onClick={handleSave}>
-                Salvar documento
+              <Button variant="hero" onClick={handleSave} disabled={saving}>
+                {saving ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Salvando...</> : "Salvar documento"}
               </Button>
             </div>
           </div>
