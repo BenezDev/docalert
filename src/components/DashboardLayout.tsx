@@ -47,7 +47,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/dashboard")}>
               <Bell className="h-4 w-4" />
               {urgentCount > 0 && (
