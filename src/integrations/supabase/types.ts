@@ -172,6 +172,47 @@ export type Database = {
         }
         Relationships: []
       }
+      renovacoes: {
+        Row: {
+          criado_em: string
+          custo_renovacao: number | null
+          data_renovacao: string
+          documento_id: string
+          id: string
+          multa_evitada: number | null
+          observacoes: string | null
+          usuario_id: string
+        }
+        Insert: {
+          criado_em?: string
+          custo_renovacao?: number | null
+          data_renovacao?: string
+          documento_id: string
+          id?: string
+          multa_evitada?: number | null
+          observacoes?: string | null
+          usuario_id: string
+        }
+        Update: {
+          criado_em?: string
+          custo_renovacao?: number | null
+          data_renovacao?: string
+          documento_id?: string
+          id?: string
+          multa_evitada?: number | null
+          observacoes?: string | null
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renovacoes_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

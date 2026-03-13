@@ -3,14 +3,16 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
+import { useRenewals } from "@/hooks/useRenewals";
 import { useAuth } from "@/hooks/useAuth";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, getStatusLevel, PENALTY_INFO } from "@/lib/documents";
-import { Plus, CheckCircle2, AlertTriangle, AlertCircle, DollarSign, ArrowRight, FileText, Shield } from "lucide-react";
+import { Plus, CheckCircle2, AlertTriangle, AlertCircle, DollarSign, ArrowRight, FileText, Shield, TrendingUp, History } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { documents, isLoading } = useDocs();
+  const { renewals, totalCost, totalSaved, isLoading: loadingRenewals } = useRenewals();
   const navigate = useNavigate();
 
   const docsWithDays = documents.map((d) => ({
@@ -25,11 +27,11 @@ export default function DashboardPage() {
   const attention = sorted.filter((d) => !d.resolvido && d.daysLeft > 7 && d.daysLeft <= 30);
   const critical = sorted.filter((d) => !d.resolvido && d.daysLeft <= 7);
 
-  const totalSavings = urgent.reduce((sum, d) => {
+  // Potential savings from pending urgent docs
+  const potentialSavings = urgent.reduce((sum, d) => {
     const info = PENALTY_INFO[d.tipo];
     if (!info) return sum;
-    const match = info.penalty.match(/[\d.,]+/);
-    return sum + (match ? parseFloat(match[0].replace(".", "").replace(",", ".")) : 0);
+    return sum + (info.estimatedValue ?? 0);
   }, 0);
 
   const hour = new Date().getHours();
@@ -39,7 +41,7 @@ export default function DashboardPage() {
     { label: "Em dia", count: ok.length, icon: CheckCircle2, color: "text-success", border: "border-l-success" },
     { label: "Atenção", count: attention.length, icon: AlertTriangle, color: "text-warning", border: "border-l-warning" },
     { label: "Urgente", count: critical.length, icon: AlertCircle, color: "text-destructive", border: "border-l-destructive" },
-    { label: "Economia potencial", count: null, value: `R$ ${totalSavings.toFixed(0)}`, icon: DollarSign, color: "text-secondary", border: "border-l-secondary" },
+    { label: "Economia potencial", count: null, value: `R$ ${potentialSavings.toFixed(0)}`, icon: DollarSign, color: "text-secondary", border: "border-l-secondary" },
   ];
 
   // Loading skeleton
@@ -143,6 +145,38 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Savings Summary — only show if has renewal history */}
+      {renewals.length > 0 && (
+        <section className="mb-8">
+          <div className="bg-card rounded-lg p-6 shadow-card border-l-4 border-l-success">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="h-5 w-5 text-success" />
+              <h2 className="text-lg font-bold">Sua economia com o DocAlert</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-2xl font-display font-bold text-success">
+                  R$ {totalSaved.toFixed(2).replace(".", ",")}
+                </p>
+                <p className="text-xs text-muted-foreground font-body">Multas evitadas</p>
+              </div>
+              <div>
+                <p className="text-2xl font-display font-bold">
+                  R$ {totalCost.toFixed(2).replace(".", ",")}
+                </p>
+                <p className="text-xs text-muted-foreground font-body">Gasto com renovações</p>
+              </div>
+              <div>
+                <p className="text-2xl font-display font-bold text-secondary">
+                  {renewals.length}
+                </p>
+                <p className="text-xs text-muted-foreground font-body">Renovações feitas</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Urgent Section */}
       {urgent.length > 0 && (
