@@ -10,8 +10,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { useDocs } from "@/hooks/useDocs";
+import { useRenewals } from "@/hooks/useRenewals";
 import { DOCUMENT_TYPES, getDaysUntilExpiry, PENALTY_INFO, RENEWAL_GUIDES } from "@/lib/documents";
-import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, CalendarIcon, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, CheckCircle2, Clock, CalendarIcon, X, Loader2, History, DollarSign, Plus } from "lucide-react";
 import { PenaltyCalculator } from "@/components/PenaltyCalculator";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -21,6 +22,7 @@ import { toast } from "sonner";
 export default function DocumentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { getDocument, updateDocument, deleteDocument } = useDocs();
+  const { renewals, addRenewal, deleteRenewal, totalCost, totalSaved, isLoading: loadingRenewals } = useRenewals(id);
   const navigate = useNavigate();
 
   const doc = getDocument(id || "");
@@ -33,6 +35,13 @@ export default function DocumentDetailPage() {
   const [editDataVenc, setEditDataVenc] = useState<Date | undefined>();
   const [editDataEmissao, setEditDataEmissao] = useState<Date | undefined>();
   const [editObs, setEditObs] = useState("");
+
+  // Renewal form state
+  const [showRenewalForm, setShowRenewalForm] = useState(false);
+  const [renewalDate, setRenewalDate] = useState<Date | undefined>(new Date());
+  const [renewalCost, setRenewalCost] = useState("");
+  const [renewalNotes, setRenewalNotes] = useState("");
+  const [savingRenewal, setSavingRenewal] = useState(false);
 
   if (!doc) {
     return (
@@ -83,8 +92,37 @@ export default function DocumentDetailPage() {
   };
 
   const handleResolve = async () => {
-    await updateDocument(doc.id, { resolvido: !doc.resolvido });
-    toast.success(doc.resolvido ? "Marcado como pendente." : "Marcado como renovado!");
+    if (!doc.resolvido) {
+      // Show renewal form instead of immediately marking as resolved
+      setShowRenewalForm(true);
+      return;
+    }
+    await updateDocument(doc.id, { resolvido: false });
+    toast.success("Marcado como pendente.");
+  };
+
+  const handleSaveRenewal = async () => {
+    if (!renewalDate || !id) return;
+    setSavingRenewal(true);
+
+    const cost = parseFloat(renewalCost.replace(",", ".")) || 0;
+    const multaEvitada = penaltyInfo?.estimatedValue ?? 0;
+
+    await addRenewal({
+      documento_id: id,
+      data_renovacao: renewalDate.toISOString().split("T")[0],
+      custo_renovacao: cost,
+      multa_evitada: multaEvitada,
+      observacoes: renewalNotes,
+    });
+
+    await updateDocument(doc.id, { resolvido: true });
+
+    setSavingRenewal(false);
+    setShowRenewalForm(false);
+    setRenewalCost("");
+    setRenewalNotes("");
+    toast.success("Renovação registrada! Multa de R$ " + multaEvitada.toFixed(2).replace(".", ",") + " evitada.");
   };
 
   return (
@@ -197,6 +235,70 @@ export default function DocumentDetailPage() {
           </div>
         )}
 
+        {/* Renewal Form — shown when user clicks "Já renovei" */}
+        {showRenewalForm && (
+          <div className="bg-success/5 border border-success/20 rounded-lg p-6 mb-6 space-y-4">
+            <h2 className="font-display font-bold text-lg flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-success" />
+              Registrar renovação
+            </h2>
+            <p className="text-sm text-muted-foreground font-body">
+              Registre os detalhes da renovação para acompanhar seu histórico e economia.
+            </p>
+            <div>
+              <Label className="font-body">Data da renovação</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal font-body", !renewalDate && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {renewalDate ? format(renewalDate, "dd/MM/yyyy") : "Selecione"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={renewalDate} onSelect={setRenewalDate} locale={ptBR} className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label className="font-body">Custo da renovação (R$)</Label>
+              <Input
+                placeholder="0,00"
+                value={renewalCost}
+                onChange={(e) => setRenewalCost(e.target.value)}
+                type="text"
+                inputMode="decimal"
+              />
+            </div>
+            {penaltyInfo?.estimatedValue && (
+              <div className="bg-card rounded-lg p-3 flex items-center gap-3">
+                <DollarSign className="h-5 w-5 text-success shrink-0" />
+                <div>
+                  <p className="text-sm font-body font-semibold text-success">
+                    Multa evitada: R$ {penaltyInfo.estimatedValue.toFixed(2).replace(".", ",")}
+                  </p>
+                  <p className="text-xs text-muted-foreground font-body">
+                    {penaltyInfo.penalty}
+                  </p>
+                </div>
+              </div>
+            )}
+            <div>
+              <Label className="font-body">Observações</Label>
+              <Input
+                placeholder="Ex: Renovado no DETRAN Centro"
+                value={renewalNotes}
+                onChange={(e) => setRenewalNotes(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="hero" onClick={handleSaveRenewal} disabled={savingRenewal || !renewalDate}>
+                {savingRenewal ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Salvando...</> : "Registrar renovação"}
+              </Button>
+              <Button variant="outline" onClick={() => setShowRenewalForm(false)}>Cancelar</Button>
+            </div>
+          </div>
+        )}
+
         {/* Status Card */}
         <div className="bg-card rounded-lg p-6 shadow-card border-l-4 mb-6" style={{
           borderLeftColor: daysLeft <= 7 ? "hsl(var(--destructive))" : daysLeft <= 30 ? "hsl(var(--warning))" : daysLeft <= 90 ? "hsl(var(--info))" : "hsl(var(--success))",
@@ -266,6 +368,55 @@ export default function DocumentDetailPage() {
                       {s.time && <span className="text-xs text-muted-foreground font-body">⏱ {s.time}</span>}
                       {s.cost && <span className="text-xs text-muted-foreground font-body">💰 {s.cost}</span>}
                     </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Renewal History */}
+        {renewals.length > 0 && (
+          <div className="bg-card rounded-lg shadow-card overflow-hidden mb-6">
+            <div className="p-5 border-b flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="h-5 w-5 text-muted-foreground" />
+                <h2 className="font-display font-bold text-lg">Histórico de Renovações</h2>
+              </div>
+              <div className="flex items-center gap-4 text-sm font-body">
+                <span className="text-success font-semibold">
+                  R$ {totalSaved.toFixed(2).replace(".", ",")} evitados
+                </span>
+                <span className="text-muted-foreground">
+                  R$ {totalCost.toFixed(2).replace(".", ",")} gastos
+                </span>
+              </div>
+            </div>
+            <div className="divide-y">
+              {renewals.map((r) => (
+                <div key={r.id} className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-body font-medium">
+                        Renovado em {new Date(r.data_renovacao).toLocaleDateString("pt-BR")}
+                      </p>
+                      {r.observacoes && (
+                        <p className="text-xs text-muted-foreground font-body">{r.observacoes}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    {Number(r.custo_renovacao) > 0 && (
+                      <p className="text-sm font-body">R$ {Number(r.custo_renovacao).toFixed(2).replace(".", ",")}</p>
+                    )}
+                    {Number(r.multa_evitada) > 0 && (
+                      <p className="text-xs text-success font-body font-semibold">
+                        -R$ {Number(r.multa_evitada).toFixed(2).replace(".", ",")} evitados
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
