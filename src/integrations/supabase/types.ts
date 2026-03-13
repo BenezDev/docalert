@@ -124,6 +124,54 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          criado_em: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          criado_em?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          criado_em?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          criado_em: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          reward_months: number
+          status: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          reward_months?: number
+          status?: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_months?: number
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
