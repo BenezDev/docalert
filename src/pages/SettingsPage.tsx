@@ -126,7 +126,7 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-display font-semibold">WhatsApp</p>
-                  <p className="text-sm text-muted-foreground font-body">Disponível no plano Pessoal</p>
+                  <p className="text-sm text-muted-foreground font-body">Disponível no plano Individual</p>
                 </div>
                 <Switch disabled />
               </div>
