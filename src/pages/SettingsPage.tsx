@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, UserPlus, Loader2 } from "lucide-react";
+import { Check, Crown, UserPlus, Loader2, Gift, Copy, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -19,6 +19,12 @@ export default function SettingsPage() {
   const [telefone, setTelefone] = useState("");
   const [saving, setSaving] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Referral state
+  const [referralCode, setReferralCode] = useState("");
+  const [referralCount, setReferralCount] = useState(0);
+  const [rewardMonths, setRewardMonths] = useState(0);
+  const [loadingReferral, setLoadingReferral] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -39,6 +45,32 @@ export default function SettingsPage() {
     fetchProfile();
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    const fetchReferral = async () => {
+      setLoadingReferral(true);
+      // Fetch referral code
+      const { data: codeData } = await supabase
+        .from("referral_codes")
+        .select("code")
+        .eq("user_id", user.id)
+        .single();
+      if (codeData) setReferralCode(codeData.code);
+
+      // Fetch referral stats
+      const { data: referrals } = await supabase
+        .from("referrals")
+        .select("*")
+        .eq("referrer_id", user.id);
+      if (referrals) {
+        setReferralCount(referrals.length);
+        setRewardMonths(referrals.reduce((sum, r) => sum + (r.reward_months || 0), 0));
+      }
+      setLoadingReferral(false);
+    };
+    fetchReferral();
+  }, [user]);
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
@@ -54,6 +86,15 @@ export default function SettingsPage() {
     }
   };
 
+  const referralLink = referralCode
+    ? `${window.location.origin}/cadastro?ref=${referralCode}`
+    : "";
+
+  const copyReferralLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    toast.success("Link copiado!");
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-2xl mx-auto">
@@ -64,6 +105,7 @@ export default function SettingsPage() {
             <TabsTrigger value="perfil" className="font-body">Perfil</TabsTrigger>
             <TabsTrigger value="notificacoes" className="font-body">Notificações</TabsTrigger>
             <TabsTrigger value="plano" className="font-body">Plano</TabsTrigger>
+            <TabsTrigger value="indicacao" className="font-body">Indicação</TabsTrigger>
             <TabsTrigger value="familia" className="font-body">Família</TabsTrigger>
           </TabsList>
 
@@ -174,9 +216,69 @@ export default function SettingsPage() {
             </div>
           </TabsContent>
 
+          <TabsContent value="indicacao">
+            <div className="bg-card rounded-lg p-6 shadow-card space-y-6">
+              <div className="flex items-center gap-3">
+                <Gift className="h-5 w-5 text-secondary" />
+                <div>
+                  <h3 className="font-display font-bold">Programa de Indicação</h3>
+                  <p className="text-sm text-muted-foreground font-body">Ganhe 1 mês grátis para cada amigo que criar conta</p>
+                </div>
+              </div>
+
+              {loadingReferral ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+              ) : (
+                <>
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-muted/50 rounded-lg p-4 text-center">
+                      <Users className="h-5 w-5 text-secondary mx-auto mb-1" />
+                      <p className="text-2xl font-display font-bold">{referralCount}</p>
+                      <p className="text-xs text-muted-foreground font-body">Amigos indicados</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-4 text-center">
+                      <Gift className="h-5 w-5 text-success mx-auto mb-1" />
+                      <p className="text-2xl font-display font-bold">{rewardMonths}</p>
+                      <p className="text-xs text-muted-foreground font-body">Meses grátis ganhos</p>
+                    </div>
+                  </div>
+
+                  {/* Share link */}
+                  <div>
+                    <Label className="font-body text-sm mb-2 block">Seu link de indicação</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={referralLink}
+                        readOnly
+                        className="font-body text-sm bg-muted/30"
+                      />
+                      <Button variant="outline" size="icon" onClick={copyReferralLink} title="Copiar link">
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body mt-2">
+                      Compartilhe este link com amigos. Quando eles criarem uma conta, você ganha 1 mês grátis automaticamente!
+                    </p>
+                  </div>
+
+                  {/* Referral code display */}
+                  <div className="border-t pt-4">
+                    <p className="text-xs text-muted-foreground font-body">
+                      Seu código: <span className="font-mono font-bold text-foreground">{referralCode}</span>
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </TabsContent>
+
           <TabsContent value="familia">
             <div className="bg-card rounded-lg p-6 shadow-card">
-                  <p className="text-sm text-muted-foreground font-body mb-4">
+              <p className="text-sm text-muted-foreground font-body mb-4">
                 Gerencie os membros da sua família. Disponível no plano Familiar (R$ 19,90/mês).
               </p>
               <Button variant="outline" className="font-body" disabled>
