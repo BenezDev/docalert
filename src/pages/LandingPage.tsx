@@ -62,7 +62,7 @@ export default function LandingPage() {
               </Button>
             </div>
             <p className="mt-5 text-xs text-muted-foreground font-body">
-              Grátis para 1 documento · Plano completo por R$ 9,90/mês
+              Grátis para 1 documento · Individual R$ 9,90/mês · Familiar R$ 19,90/mês
             </p>
           </div>
 
@@ -266,16 +266,16 @@ export default function LandingPage() {
 
       {/* Preços — simplificado */}
       <section id="precos" className="py-20">
-        <div className="container max-w-3xl">
+        <div className="container max-w-5xl">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Preço justo, sem surpresas</h2>
           <p className="text-center text-muted-foreground font-body mb-12">
             Comece de graça. Faça upgrade quando precisar de mais.
           </p>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Free */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Gratuito */}
             <div className="bg-card rounded-lg p-7 shadow-card border border-border/50">
               <h3 className="font-display font-bold text-lg mb-1">Gratuito</h3>
-              <p className="text-muted-foreground font-body text-sm mb-5">Para uso pessoal básico</p>
+              <p className="text-muted-foreground font-body text-sm mb-5">Para experimentar</p>
               <p className="text-3xl font-display font-bold mb-6">R$ 0</p>
               <ul className="space-y-3 mb-8">
                 {["1 documento", "Alertas por email", "Guia básico de renovação"].map((f) => (
@@ -289,12 +289,12 @@ export default function LandingPage() {
                 Começar grátis
               </Button>
             </div>
-            {/* Pessoal */}
+            {/* Individual */}
             <div className="bg-card rounded-lg p-7 shadow-card ring-2 ring-secondary relative">
               <div className="absolute -top-3 right-6 bg-secondary text-secondary-foreground text-xs font-body font-semibold px-3 py-1 rounded-full">
                 Recomendado
               </div>
-              <h3 className="font-display font-bold text-lg mb-1">Pessoal</h3>
+              <h3 className="font-display font-bold text-lg mb-1">Individual</h3>
               <p className="text-muted-foreground font-body text-sm mb-5">Para quem quer tranquilidade total</p>
               <div className="mb-6">
                 <span className="text-3xl font-display font-bold">R$ 9,90</span>
@@ -304,8 +304,31 @@ export default function LandingPage() {
                 {[
                   "Documentos ilimitados",
                   "Alertas por WhatsApp",
-                  "Modo família (até 4 pessoas)",
                   "Guia completo + calculadora de multas",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm font-body">
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="hero" className="w-full" onClick={() => navigate("/cadastro")}>
+                Assinar agora
+              </Button>
+            </div>
+            {/* Familiar */}
+            <div className="bg-card rounded-lg p-7 shadow-card border border-border/50">
+              <h3 className="font-display font-bold text-lg mb-1">Familiar</h3>
+              <p className="text-muted-foreground font-body text-sm mb-5">Para toda a família</p>
+              <div className="mb-6">
+                <span className="text-3xl font-display font-bold">R$ 19,90</span>
+                <span className="text-muted-foreground font-body">/mês</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Tudo do Individual",
+                  "Até 5 membros da família",
+                  "Painel compartilhado",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm font-body">
                     <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
@@ -319,7 +342,7 @@ export default function LandingPage() {
             </div>
           </div>
           <p className="text-center text-xs text-muted-foreground font-body mt-6">
-            Precisa de plano empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente</a>
+            Precisa de plano empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente — sob consulta</a>
           </p>
         </div>
       </section>

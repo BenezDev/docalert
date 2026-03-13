@@ -212,7 +212,7 @@ export default function AddDocumentPage() {
               </div>
               <div className="flex items-center gap-3">
                 <Checkbox disabled />
-                <span className="font-body text-sm text-muted-foreground">WhatsApp (plano pago)</span>
+                <span className="font-body text-sm text-muted-foreground">WhatsApp (plano Individual)</span>
               </div>
             </div>
 
