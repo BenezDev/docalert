@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
-import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Eye, EyeOff, Gift } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SignupPage() {
@@ -21,6 +22,29 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
+
+  const processReferral = async (newUserId: string) => {
+    if (!refCode) return;
+    try {
+      // Look up referrer by code
+      const { data: codeData } = await supabase
+        .from("referral_codes")
+        .select("user_id")
+        .eq("code", refCode.toUpperCase())
+        .single();
+      
+      if (codeData && codeData.user_id !== newUserId) {
+        // Use edge function to insert referral (needs service role for insert)
+        await supabase.functions.invoke("process-referral", {
+          body: { referrer_id: codeData.user_id, referred_id: newUserId },
+        });
+      }
+    } catch {
+      // Silent fail — don't block signup
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +56,9 @@ export default function SignupPage() {
     if (result.error) {
       toast.error(result.error);
     } else {
+      // Process referral after successful signup
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) await processReferral(user.id);
       toast.success("Conta criada! Verifique seu email para confirmar.");
       navigate("/dashboard");
     }
@@ -52,7 +79,16 @@ export default function SignupPage() {
             <Logo size="lg" />
           </div>
           <h1 className="text-2xl font-bold text-center mb-2">Criar sua conta</h1>
-          <p className="text-center text-muted-foreground font-body mb-8">Comece a controlar seus prazos</p>
+          <p className="text-center text-muted-foreground font-body mb-4">Comece a controlar seus prazos</p>
+
+          {refCode && (
+            <div className="flex items-center gap-2 bg-success/10 border border-success/20 rounded-lg p-3 mb-6">
+              <Gift className="h-4 w-4 text-success shrink-0" />
+              <p className="text-sm font-body text-success">
+                Você foi indicado! Seu amigo ganhará 1 mês grátis.
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
