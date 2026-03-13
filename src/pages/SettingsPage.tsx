@@ -176,7 +176,7 @@ export default function SettingsPage() {
 
           <TabsContent value="familia">
             <div className="bg-card rounded-lg p-6 shadow-card">
-              <p className="text-sm text-muted-foreground font-body mb-4">
+                  <p className="text-sm text-muted-foreground font-body mb-4">
                 Gerencie os membros da sua família. Disponível no plano Familiar (R$ 19,90/mês).
               </p>
               <Button variant="outline" className="font-body" disabled>

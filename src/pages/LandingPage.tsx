@@ -266,7 +266,7 @@ export default function LandingPage() {
 
       {/* Preços — simplificado */}
       <section id="precos" className="py-20">
-        <div className="container max-w-3xl">
+        <div className="container max-w-5xl">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">Preço justo, sem surpresas</h2>
           <p className="text-center text-muted-foreground font-body mb-12">
             Comece de graça. Faça upgrade quando precisar de mais.
