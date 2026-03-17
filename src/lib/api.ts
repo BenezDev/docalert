@@ -42,7 +42,7 @@ export const api = {
     list: () =>
       supabase.from("documentos").select("*").order("data_vencimento", { ascending: true }),
     create: (doc: Record<string, unknown>) =>
-      supabase.from("documentos").insert(doc).select().single(),
+      supabase.from("documentos").insert(doc as any).select().single(),
     get: (id: string) =>
       supabase.from("documentos").select("*").eq("id", id).single(),
     update: (id: string, updates: Record<string, unknown>) =>
