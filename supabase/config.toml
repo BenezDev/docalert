@@ -1,1 +1,16 @@
 project_id = "powthshacxtxqfsuifeb"
+
+[functions.process-referral]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
+
+[functions.user-stats]
+verify_jwt = false
+
+[functions.send-test-notification]
+verify_jwt = false
+
+[functions.documents-filter]
+verify_jwt = false
