@@ -57,10 +57,13 @@ export type Database = {
           data_emissao: string | null
           data_vencimento: string
           extra: Json | null
+          file_url: string | null
           id: string
           numero_documento: string | null
           observacoes: string | null
+          ocr_data: Json | null
           resolvido: boolean
+          status: string
           tipo: string
           usuario_id: string
         }
@@ -71,10 +74,13 @@ export type Database = {
           data_emissao?: string | null
           data_vencimento: string
           extra?: Json | null
+          file_url?: string | null
           id?: string
           numero_documento?: string | null
           observacoes?: string | null
+          ocr_data?: Json | null
           resolvido?: boolean
+          status?: string
           tipo: string
           usuario_id: string
         }
@@ -85,11 +91,103 @@ export type Database = {
           data_emissao?: string | null
           data_vencimento?: string
           extra?: Json | null
+          file_url?: string | null
           id?: string
           numero_documento?: string | null
           observacoes?: string | null
+          ocr_data?: Json | null
           resolvido?: boolean
+          status?: string
           tipo?: string
+          usuario_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          atualizado_em: string
+          content: string | null
+          criado_em: string
+          days_before_expiry: number | null
+          documento_id: string | null
+          id: string
+          notification_type: string
+          scheduled_date: string
+          sent_date: string | null
+          status: string
+          usuario_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          content?: string | null
+          criado_em?: string
+          days_before_expiry?: number | null
+          documento_id?: string | null
+          id?: string
+          notification_type?: string
+          scheduled_date: string
+          sent_date?: string | null
+          status?: string
+          usuario_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          content?: string | null
+          criado_em?: string
+          days_before_expiry?: number | null
+          documento_id?: string | null
+          id?: string
+          notification_type?: string
+          scheduled_date?: string
+          sent_date?: string | null
+          status?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_documento_id_fkey"
+            columns: ["documento_id"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          atualizado_em: string
+          criado_em: string
+          currency: string
+          id: string
+          invoice_url: string | null
+          payment_method: string | null
+          status: string
+          stripe_payment_id: string | null
+          usuario_id: string
+        }
+        Insert: {
+          amount?: number
+          atualizado_em?: string
+          criado_em?: string
+          currency?: string
+          id?: string
+          invoice_url?: string | null
+          payment_method?: string | null
+          status?: string
+          stripe_payment_id?: string | null
+          usuario_id: string
+        }
+        Update: {
+          amount?: number
+          atualizado_em?: string
+          criado_em?: string
+          currency?: string
+          id?: string
+          invoice_url?: string | null
+          payment_method?: string | null
+          status?: string
+          stripe_payment_id?: string | null
           usuario_id?: string
         }
         Relationships: []
@@ -97,28 +195,37 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          cpf: string | null
           criado_em: string
           email: string | null
           id: string
           nome: string | null
+          plan_type: string
+          stripe_customer_id: string | null
           telefone: string | null
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          cpf?: string | null
           criado_em?: string
           email?: string | null
           id?: string
           nome?: string | null
+          plan_type?: string
+          stripe_customer_id?: string | null
           telefone?: string | null
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          cpf?: string | null
           criado_em?: string
           email?: string | null
           id?: string
           nome?: string | null
+          plan_type?: string
+          stripe_customer_id?: string | null
           telefone?: string | null
           user_id?: string
         }
@@ -212,6 +319,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          atualizado_em: string
+          auto_renew: boolean
+          criado_em: string
+          end_date: string | null
+          id: string
+          plan_type: string
+          start_date: string
+          status: string
+          stripe_subscription_id: string | null
+          usuario_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          auto_renew?: boolean
+          criado_em?: string
+          end_date?: string | null
+          id?: string
+          plan_type?: string
+          start_date?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          usuario_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          auto_renew?: boolean
+          criado_em?: string
+          end_date?: string | null
+          id?: string
+          plan_type?: string
+          start_date?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          usuario_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
