@@ -131,21 +131,16 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — using StatsCard */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {summaryCards.map((card) => (
-          <div key={card.label} className={`bg-card rounded-lg p-5 shadow-card border-l-4 ${card.border}`}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground font-body">{card.label}</span>
-              <card.icon className={`h-5 w-5 ${card.color}`} />
-            </div>
-            <p className="text-3xl font-display font-bold">
-              {card.value ?? card.count}
-            </p>
-            <p className="text-xs text-muted-foreground font-body mt-1">
-              {card.count !== null ? (card.count === 1 ? "documento" : "documentos") : "se renovar agora"}
-            </p>
-          </div>
+          <StatsCard
+            key={card.label}
+            icon={card.icon}
+            title={card.label}
+            value={card.value ?? card.count ?? 0}
+            borderColor={card.color}
+          />
         ))}
       </div>
 
