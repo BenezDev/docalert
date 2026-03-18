@@ -147,11 +147,11 @@ export default function NotificationsPage() {
                     isUnread ? "border-l-secondary" : "border-l-transparent"
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center shrink-0 ${
                       isUnread ? "bg-secondary/10" : "bg-muted"
                     }`}>
-                      <Icon className={`h-5 w-5 ${isUnread ? "text-secondary" : "text-muted-foreground"}`} />
+                      <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${isUnread ? "text-secondary" : "text-muted-foreground"}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-body ${isUnread ? "font-semibold" : ""}`}>
