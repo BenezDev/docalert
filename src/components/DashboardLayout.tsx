@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useDocs } from "@/hooks/useDocs";
 import { getDaysUntilExpiry } from "@/lib/documents";
-import { Bell, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, BellRing } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, BellRing } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
