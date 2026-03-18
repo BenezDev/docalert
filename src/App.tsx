@@ -55,8 +55,10 @@ function AppRoutes() {
         <Route path="/dashboard/adicionar" element={<ProtectedRoute><AddDocumentPage /></ProtectedRoute>} />
         <Route path="/dashboard/documento/:id" element={<ProtectedRoute><DocumentDetailPage /></ProtectedRoute>} />
         <Route path="/dashboard/configuracoes" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-        <Route path="/dashboard/documentos" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/dashboard/documentos" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
+        <Route path="/dashboard/notificacoes" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
         <Route path="/dashboard/familia" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+        <Route path="/precos" element={<PricingPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
