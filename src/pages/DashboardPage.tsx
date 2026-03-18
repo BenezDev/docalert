@@ -5,6 +5,7 @@ import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
 import { StatsCard } from "@/components/StatsCard";
 import { Timeline } from "@/components/Timeline";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { DocumentCard } from "@/components/DocumentCard";
 import { useDocs } from "@/hooks/useDocs";
 import { useRenewals } from "@/hooks/useRenewals";
 import { useAuth } from "@/hooks/useAuth";
