@@ -41,10 +41,10 @@ export default function DashboardPage() {
   const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 
   const summaryCards = [
-    { label: "Em dia", count: ok.length, icon: CheckCircle2, color: "text-success", border: "border-l-success" },
-    { label: "Atenção", count: attention.length, icon: AlertTriangle, color: "text-warning", border: "border-l-warning" },
-    { label: "Urgente", count: critical.length, icon: AlertCircle, color: "text-destructive", border: "border-l-destructive" },
-    { label: "Economia potencial", count: null, value: `R$ ${potentialSavings.toFixed(0)}`, icon: DollarSign, color: "text-secondary", border: "border-l-secondary" },
+    { label: "Em dia", count: ok.length, icon: CheckCircle2, color: "hsl(var(--success))" },
+    { label: "Atenção", count: attention.length, icon: AlertTriangle, color: "hsl(var(--warning))" },
+    { label: "Urgente", count: critical.length, icon: AlertCircle, color: "hsl(var(--destructive))" },
+    { label: "Economia potencial", count: null, value: `R$ ${potentialSavings.toFixed(0)}`, icon: DollarSign, color: "hsl(var(--secondary))" },
   ];
 
   // Loading skeleton
