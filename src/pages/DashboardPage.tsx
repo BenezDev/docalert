@@ -2,6 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, StatusBar } from "@/components/StatusIndicators";
+import { StatsCard } from "@/components/StatsCard";
+import { Timeline } from "@/components/Timeline";
+import { CountdownTimer } from "@/components/CountdownTimer";
+import { DocumentCard } from "@/components/DocumentCard";
 import { useDocs } from "@/hooks/useDocs";
 import { useRenewals } from "@/hooks/useRenewals";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { documents, isLoading } = useDocs();
+  const { documents, isLoading, deleteDocument } = useDocs();
   const { renewals, totalCost, totalSaved, isLoading: loadingRenewals } = useRenewals();
   const navigate = useNavigate();
 
@@ -38,10 +42,10 @@ export default function DashboardPage() {
   const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 
   const summaryCards = [
-    { label: "Em dia", count: ok.length, icon: CheckCircle2, color: "text-success", border: "border-l-success" },
-    { label: "Atenção", count: attention.length, icon: AlertTriangle, color: "text-warning", border: "border-l-warning" },
-    { label: "Urgente", count: critical.length, icon: AlertCircle, color: "text-destructive", border: "border-l-destructive" },
-    { label: "Economia potencial", count: null, value: `R$ ${potentialSavings.toFixed(0)}`, icon: DollarSign, color: "text-secondary", border: "border-l-secondary" },
+    { label: "Em dia", count: ok.length, icon: CheckCircle2, color: "hsl(var(--success))" },
+    { label: "Atenção", count: attention.length, icon: AlertTriangle, color: "hsl(var(--warning))" },
+    { label: "Urgente", count: critical.length, icon: AlertCircle, color: "hsl(var(--destructive))" },
+    { label: "Economia potencial", count: null, value: `R$ ${potentialSavings.toFixed(0)}`, icon: DollarSign, color: "hsl(var(--secondary))" },
   ];
 
   // Loading skeleton
@@ -128,21 +132,16 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — using StatsCard */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {summaryCards.map((card) => (
-          <div key={card.label} className={`bg-card rounded-lg p-5 shadow-card border-l-4 ${card.border}`}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-muted-foreground font-body">{card.label}</span>
-              <card.icon className={`h-5 w-5 ${card.color}`} />
-            </div>
-            <p className="text-3xl font-display font-bold">
-              {card.value ?? card.count}
-            </p>
-            <p className="text-xs text-muted-foreground font-body mt-1">
-              {card.count !== null ? (card.count === 1 ? "documento" : "documentos") : "se renovar agora"}
-            </p>
-          </div>
+          <StatsCard
+            key={card.label}
+            icon={card.icon}
+            title={card.label}
+            value={card.value ?? card.count ?? 0}
+            borderColor={card.color}
+          />
         ))}
       </div>
 
@@ -224,7 +223,20 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* All Documents */}
+      {/* Timeline visual */}
+      {documents.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+            <History className="h-5 w-5 text-muted-foreground" />
+            Linha do tempo (próximos 90 dias)
+          </h2>
+          <div className="bg-card rounded-lg p-6 shadow-card">
+            <Timeline documents={documents} daysAhead={90} />
+          </div>
+        </section>
+      )}
+
+      {/* All Documents — using DocumentCard */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">Todos os Documentos</h2>
@@ -234,33 +246,20 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((doc) => {
-            const typeInfo = DOCUMENT_TYPES[doc.tipo];
-            const Icon = typeInfo?.icon;
-            return (
-              <div
-                key={doc.id}
-                className="bg-card rounded-lg p-5 shadow-card hover:shadow-card-hover transition-shadow cursor-pointer"
-                onClick={() => navigate(`/dashboard/documento/${doc.id}`)}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display font-semibold truncate">{doc.apelido || typeInfo?.label}</p>
-                    <p className="text-xs text-muted-foreground font-body">{typeInfo?.label}</p>
-                  </div>
-                </div>
-                <StatusBadge daysLeft={doc.daysLeft} className="mb-3" />
-                <p className="text-sm text-muted-foreground font-body mb-3">
-                  Vence: {new Date(doc.data_vencimento).toLocaleDateString("pt-BR")}
-                </p>
-                <StatusBar daysLeft={doc.daysLeft} className="mb-3" />
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 font-body text-xs">Ver detalhes</Button>
-                </div>
-              </div>
-            );
-          })}
+          {sorted.map((doc) => (
+            <DocumentCard
+              key={doc.id}
+              id={doc.id}
+              tipo={doc.tipo}
+              apelido={doc.apelido}
+              numero_documento={doc.numero_documento}
+              data_vencimento={doc.data_vencimento}
+              resolvido={doc.resolvido}
+              onDelete={(id) => {
+                deleteDocument(id);
+              }}
+            />
+          ))}
         </div>
       </section>
     </DashboardLayout>
