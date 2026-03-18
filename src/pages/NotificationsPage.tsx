@@ -97,7 +97,7 @@ export default function NotificationsPage() {
   return (
     <DashboardLayout>
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-bold">Notificações</h1>
             <p className="text-sm text-muted-foreground font-body">
@@ -107,7 +107,7 @@ export default function NotificationsPage() {
             </p>
           </div>
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" className="font-body" onClick={markAllAsRead}>
+            <Button variant="outline" size="sm" className="font-body w-full sm:w-auto" onClick={markAllAsRead}>
               <CheckCheck className="h-4 w-4 mr-1" /> Marcar todas como lidas
             </Button>
           )}
