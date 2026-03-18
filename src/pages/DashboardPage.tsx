@@ -222,7 +222,20 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* All Documents */}
+      {/* Timeline visual */}
+      {documents.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+            <History className="h-5 w-5 text-muted-foreground" />
+            Linha do tempo (próximos 90 dias)
+          </h2>
+          <div className="bg-card rounded-lg p-6 shadow-card">
+            <Timeline documents={documents} daysAhead={90} />
+          </div>
+        </section>
+      )}
+
+      {/* All Documents — using DocumentCard */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">Todos os Documentos</h2>
@@ -232,33 +245,20 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((doc) => {
-            const typeInfo = DOCUMENT_TYPES[doc.tipo];
-            const Icon = typeInfo?.icon;
-            return (
-              <div
-                key={doc.id}
-                className="bg-card rounded-lg p-5 shadow-card hover:shadow-card-hover transition-shadow cursor-pointer"
-                onClick={() => navigate(`/dashboard/documento/${doc.id}`)}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display font-semibold truncate">{doc.apelido || typeInfo?.label}</p>
-                    <p className="text-xs text-muted-foreground font-body">{typeInfo?.label}</p>
-                  </div>
-                </div>
-                <StatusBadge daysLeft={doc.daysLeft} className="mb-3" />
-                <p className="text-sm text-muted-foreground font-body mb-3">
-                  Vence: {new Date(doc.data_vencimento).toLocaleDateString("pt-BR")}
-                </p>
-                <StatusBar daysLeft={doc.daysLeft} className="mb-3" />
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 font-body text-xs">Ver detalhes</Button>
-                </div>
-              </div>
-            );
-          })}
+          {sorted.map((doc) => (
+            <DocumentCard
+              key={doc.id}
+              id={doc.id}
+              tipo={doc.tipo}
+              apelido={doc.apelido}
+              numero_documento={doc.numero_documento}
+              data_vencimento={doc.data_vencimento}
+              resolvido={doc.resolvido}
+              onDelete={(id) => {
+                deleteDocument(id);
+              }}
+            />
+          ))}
         </div>
       </section>
     </DashboardLayout>
