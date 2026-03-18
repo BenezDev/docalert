@@ -162,7 +162,7 @@ export default function PricingPage() {
           <div>
             <h2 className="text-xl font-bold text-center mb-8">Comparação detalhada</h2>
             <div className="bg-card rounded-lg shadow-card overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/30">

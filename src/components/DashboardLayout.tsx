@@ -89,7 +89,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <main className="container py-6 md:py-8">
+      <main className="container py-4 px-4 md:py-8">
         {children}
       </main>
     </div>

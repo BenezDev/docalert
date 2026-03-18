@@ -157,7 +157,7 @@ export default function NotificationsPage() {
                       <p className={`text-sm font-body ${isUnread ? "font-semibold" : ""}`}>
                         {n.content || "Alerta de vencimento"}
                       </p>
-                      <div className="flex items-center gap-3 mt-1">
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
                         <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {format(new Date(n.scheduled_date), "dd MMM yyyy", { locale: ptBR })}
@@ -181,17 +181,17 @@ export default function NotificationsPage() {
                            n.status === "READ" ? "Lida" : "Falhou"}
                         </Badge>
                       </div>
+                      {isUnread && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="font-body text-xs mt-1 sm:mt-0 px-2 h-7"
+                          onClick={() => markAsRead(n.id)}
+                        >
+                          Marcar lida
+                        </Button>
+                      )}
                     </div>
-                    {isUnread && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="font-body text-xs shrink-0"
-                        onClick={() => markAsRead(n.id)}
-                      >
-                        Marcar lida
-                      </Button>
-                    )}
                   </div>
                 </div>
               );

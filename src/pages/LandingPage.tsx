@@ -174,7 +174,7 @@ export default function LandingPage() {
       {/* Números */}
       <section className="py-12 border-y bg-card">
         <div className="container max-w-4xl">
-          <div className="grid grid-cols-3 gap-6 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
             {[
               { number: "47 milhões", label: "de CNHs vencem por ano no Brasil" },
               { number: "R$ 293", label: "é a multa por dirigir com CNH vencida" },
