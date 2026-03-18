@@ -153,7 +153,7 @@ export default function DashboardPage() {
               <TrendingUp className="h-5 w-5 text-success" />
               <h2 className="text-lg font-bold">Sua economia com o DocAlert</h2>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <p className="text-2xl font-display font-bold text-success">
                   R$ {totalSaved.toFixed(2).replace(".", ",")}
