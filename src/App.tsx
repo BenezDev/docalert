@@ -17,6 +17,9 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const AddDocumentPage = lazy(() => import("./pages/AddDocumentPage"));
 const DocumentDetailPage = lazy(() => import("./pages/DocumentDetailPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
