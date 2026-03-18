@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.documents-filter]
 verify_jwt = false
+
+[functions.check-expiring-documents]
+verify_jwt = false
