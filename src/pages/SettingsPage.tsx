@@ -101,13 +101,15 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold mb-6">Configurações</h1>
 
         <Tabs defaultValue="perfil">
-          <TabsList className="mb-6 w-full justify-start">
-            <TabsTrigger value="perfil" className="font-body">Perfil</TabsTrigger>
-            <TabsTrigger value="notificacoes" className="font-body">Notificações</TabsTrigger>
-            <TabsTrigger value="plano" className="font-body">Plano</TabsTrigger>
-            <TabsTrigger value="indicacao" className="font-body">Indicação</TabsTrigger>
-            <TabsTrigger value="familia" className="font-body">Família</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 mb-6">
+            <TabsList className="w-max min-w-full justify-start">
+              <TabsTrigger value="perfil" className="font-body text-xs sm:text-sm">Perfil</TabsTrigger>
+              <TabsTrigger value="notificacoes" className="font-body text-xs sm:text-sm">Notificações</TabsTrigger>
+              <TabsTrigger value="plano" className="font-body text-xs sm:text-sm">Plano</TabsTrigger>
+              <TabsTrigger value="indicacao" className="font-body text-xs sm:text-sm">Indicação</TabsTrigger>
+              <TabsTrigger value="familia" className="font-body text-xs sm:text-sm">Família</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="perfil">
             <div className="bg-card rounded-lg p-6 shadow-card space-y-4">

@@ -97,7 +97,7 @@ export default function NotificationsPage() {
   return (
     <DashboardLayout>
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-bold">Notificações</h1>
             <p className="text-sm text-muted-foreground font-body">
@@ -107,7 +107,7 @@ export default function NotificationsPage() {
             </p>
           </div>
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" className="font-body" onClick={markAllAsRead}>
+            <Button variant="outline" size="sm" className="font-body w-full sm:w-auto" onClick={markAllAsRead}>
               <CheckCheck className="h-4 w-4 mr-1" /> Marcar todas como lidas
             </Button>
           )}
@@ -147,17 +147,17 @@ export default function NotificationsPage() {
                     isUnread ? "border-l-secondary" : "border-l-transparent"
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center shrink-0 ${
                       isUnread ? "bg-secondary/10" : "bg-muted"
                     }`}>
-                      <Icon className={`h-5 w-5 ${isUnread ? "text-secondary" : "text-muted-foreground"}`} />
+                      <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${isUnread ? "text-secondary" : "text-muted-foreground"}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-body ${isUnread ? "font-semibold" : ""}`}>
                         {n.content || "Alerta de vencimento"}
                       </p>
-                      <div className="flex items-center gap-3 mt-1">
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
                         <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {format(new Date(n.scheduled_date), "dd MMM yyyy", { locale: ptBR })}
@@ -181,17 +181,17 @@ export default function NotificationsPage() {
                            n.status === "READ" ? "Lida" : "Falhou"}
                         </Badge>
                       </div>
+                      {isUnread && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="font-body text-xs mt-1 sm:mt-0 px-2 h-7"
+                          onClick={() => markAsRead(n.id)}
+                        >
+                          Marcar lida
+                        </Button>
+                      )}
                     </div>
-                    {isUnread && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="font-body text-xs shrink-0"
-                        onClick={() => markAsRead(n.id)}
-                      >
-                        Marcar lida
-                      </Button>
-                    )}
                   </div>
                 </div>
               );

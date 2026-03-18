@@ -116,8 +116,8 @@ export default function DocumentsPage() {
       </div>
 
       {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="space-y-3 mb-6">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Buscar por nome ou número..."
@@ -127,61 +127,63 @@ export default function DocumentsPage() {
           />
         </div>
 
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[160px] font-body">
-            <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tipos</SelectItem>
-            {docTypes.map(([key, info]) => (
-              <SelectItem key={key} value={key}>{info.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-full sm:w-[160px] font-body">
+              <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os tipos</SelectItem>
+              {docTypes.map(([key, info]) => (
+                <SelectItem key={key} value={key}>{info.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-          <SelectTrigger className="w-[150px] font-body">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="ok">Em dia</SelectItem>
-            <SelectItem value="attention">Atenção</SelectItem>
-            <SelectItem value="critical">Urgente</SelectItem>
-            <SelectItem value="resolved">Resolvido</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+            <SelectTrigger className="w-full sm:w-[150px] font-body">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="ok">Em dia</SelectItem>
+              <SelectItem value="attention">Atenção</SelectItem>
+              <SelectItem value="critical">Urgente</SelectItem>
+              <SelectItem value="resolved">Resolvido</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
-          <SelectTrigger className="w-[160px] font-body">
-            <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-            <SelectValue placeholder="Ordenar" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="vencimento">Data vencimento</SelectItem>
-            <SelectItem value="tipo">Tipo</SelectItem>
-            <SelectItem value="status">Status</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
+            <SelectTrigger className="w-full sm:w-[160px] font-body">
+              <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Ordenar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="vencimento">Data vencimento</SelectItem>
+              <SelectItem value="tipo">Tipo</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <div className="flex border rounded-md">
-          <Button
-            variant={view === "cards" ? "secondary" : "ghost"}
-            size="icon"
-            className="h-9 w-9 rounded-r-none"
-            onClick={() => setView("cards")}
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={view === "table" ? "secondary" : "ghost"}
-            size="icon"
-            className="h-9 w-9 rounded-l-none"
-            onClick={() => setView("table")}
-          >
-            <List className="h-4 w-4" />
-          </Button>
+          <div className="flex border rounded-md ml-auto">
+            <Button
+              variant={view === "cards" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-9 w-9 rounded-r-none"
+              onClick={() => setView("cards")}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === "table" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-9 w-9 rounded-l-none"
+              onClick={() => setView("table")}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 

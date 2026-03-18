@@ -86,15 +86,16 @@ export default function PricingPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="container flex h-14 items-center justify-between">
+        <div className="container flex h-14 items-center justify-between px-4">
           <Logo size="sm" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
             <Link to="/login">
               <Button variant="ghost" size="sm" className="font-body text-muted-foreground">Entrar</Button>
             </Link>
             <Link to="/cadastro">
-              <Button variant="hero" size="sm">Começar grátis</Button>
+              <Button variant="hero" size="sm" className="hidden sm:inline-flex">Começar grátis</Button>
+              <Button variant="hero" size="sm" className="sm:hidden text-xs px-3">Começar</Button>
             </Link>
           </div>
         </div>
@@ -161,7 +162,7 @@ export default function PricingPage() {
           <div>
             <h2 className="text-xl font-bold text-center mb-8">Comparação detalhada</h2>
             <div className="bg-card rounded-lg shadow-card overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/30">
