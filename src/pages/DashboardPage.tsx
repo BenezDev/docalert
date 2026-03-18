@@ -6,6 +6,8 @@ import { StatsCard } from "@/components/StatsCard";
 import { Timeline } from "@/components/Timeline";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { DocumentCard } from "@/components/DocumentCard";
+import { QuickAddDocument } from "@/components/QuickAddDocument";
+import { SavingsHighlight } from "@/components/SavingsHighlight";
 import { useDocs } from "@/hooks/useDocs";
 import { useRenewals } from "@/hooks/useRenewals";
 import { useAuth } from "@/hooks/useAuth";
@@ -79,34 +81,35 @@ export default function DashboardPage() {
     );
   }
 
-  // Empty state
+  // Empty state — with quick-add for fast onboarding
   if (documents.length === 0) {
     return (
       <DashboardLayout>
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in-up">
           <h1 className="text-2xl md:text-3xl font-bold">
             {greeting}, {user?.name?.split(" ")[0]}! 👋
           </h1>
-        </div>
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-20 w-20 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
-            <Shield className="h-10 w-10 text-secondary" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Nenhum documento cadastrado</h2>
-          <p className="text-muted-foreground font-body mb-6 max-w-md">
-            Adicione seus documentos para receber alertas antes de vencer e nunca mais pagar multa por atraso.
+          <p className="text-muted-foreground font-body mt-1">
+            Vamos proteger seus documentos em menos de 1 minuto.
           </p>
-          <Button variant="hero" size="lg" onClick={() => navigate("/dashboard/adicionar")}>
-            <Plus className="h-5 w-5 mr-2" />
-            Adicionar primeiro documento
-          </Button>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 max-w-2xl w-full">
+        </div>
+
+        <div className="max-w-xl mx-auto space-y-8">
+          {/* Quick add — the hero of onboarding */}
+          <QuickAddDocument />
+
+          {/* How it works — minimal */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { icon: FileText, title: "Cadastre", desc: "Adicione seus documentos com data de vencimento" },
-              { icon: AlertTriangle, title: "Receba alertas", desc: "Avisamos 90, 30 e 7 dias antes" },
-              { icon: CheckCircle2, title: "Fique em dia", desc: "Nunca mais pague multa por atraso" },
+              { icon: FileText, title: "Cadastre", desc: "Escolha o tipo e a data de vencimento", delay: "0.1s" },
+              { icon: AlertTriangle, title: "Receba alertas", desc: "Avisamos 90, 30 e 7 dias antes", delay: "0.2s" },
+              { icon: CheckCircle2, title: "Fique em dia", desc: "Nunca mais pague multa", delay: "0.3s" },
             ].map((step) => (
-              <div key={step.title} className="bg-card rounded-lg p-4 shadow-card text-center">
+              <div
+                key={step.title}
+                className="bg-card rounded-lg p-4 shadow-card text-center animate-fade-in-up"
+                style={{ animationDelay: step.delay }}
+              >
                 <step.icon className="h-6 w-6 text-secondary mx-auto mb-2" />
                 <p className="font-display font-semibold text-sm mb-1">{step.title}</p>
                 <p className="text-xs text-muted-foreground font-body">{step.desc}</p>
@@ -121,80 +124,68 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       {/* Greeting */}
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in-up">
         <h1 className="text-2xl md:text-3xl font-bold">
           {greeting}, {user?.name?.split(" ")[0]}! 👋
         </h1>
-        {urgent.length > 0 && (
+        {urgent.length > 0 ? (
           <p className="text-muted-foreground font-body mt-1">
-            Você tem {urgent.length} documento{urgent.length > 1 ? "s" : ""} precisando de atenção
+            Você tem <span className="text-destructive font-semibold">{urgent.length}</span> documento{urgent.length > 1 ? "s" : ""} precisando de atenção
+          </p>
+        ) : (
+          <p className="text-success font-body mt-1 font-medium">
+            ✅ Todos os documentos estão em dia!
           </p>
         )}
       </div>
 
       {/* Summary Cards — using StatsCard */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {summaryCards.map((card) => (
-          <StatsCard
-            key={card.label}
-            icon={card.icon}
-            title={card.label}
-            value={card.value ?? card.count ?? 0}
-            borderColor={card.color}
-          />
+        {summaryCards.map((card, i) => (
+          <div key={card.label} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
+            <StatsCard
+              icon={card.icon}
+              title={card.label}
+              value={card.value ?? card.count ?? 0}
+              borderColor={card.color}
+            />
+          </div>
         ))}
       </div>
 
-      {/* Savings Summary — only show if has renewal history */}
+      {/* Savings Summary — gamification highlight */}
       {renewals.length > 0 && (
-        <section className="mb-8">
-          <div className="bg-card rounded-lg p-6 shadow-card border-l-4 border-l-success">
-            <div className="flex items-center gap-3 mb-4">
-              <TrendingUp className="h-5 w-5 text-success" />
-              <h2 className="text-lg font-bold">Sua economia com o DocAlert</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <p className="text-2xl font-display font-bold text-success">
-                  R$ {totalSaved.toFixed(2).replace(".", ",")}
-                </p>
-                <p className="text-xs text-muted-foreground font-body">Multas evitadas</p>
-              </div>
-              <div>
-                <p className="text-2xl font-display font-bold">
-                  R$ {totalCost.toFixed(2).replace(".", ",")}
-                </p>
-                <p className="text-xs text-muted-foreground font-body">Gasto com renovações</p>
-              </div>
-              <div>
-                <p className="text-2xl font-display font-bold text-secondary">
-                  {renewals.length}
-                </p>
-                <p className="text-xs text-muted-foreground font-body">Renovações feitas</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <div className="mb-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <SavingsHighlight
+            totalSaved={totalSaved}
+            totalRenewals={renewals.length}
+            totalCost={totalCost}
+          />
+        </div>
       )}
 
-      {/* Urgent Section */}
+      {/* Urgent Section with pulse glow */}
       {urgent.length > 0 && (
-        <section className="mb-8">
+        <section className="mb-8 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
           <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
             <AlertTriangle className="h-5 w-5 text-warning" />
             Requer ação agora
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {urgent.map((doc) => {
+            {urgent.map((doc, i) => {
               const typeInfo = DOCUMENT_TYPES[doc.tipo];
               const penaltyInfo = PENALTY_INFO[doc.tipo];
               const Icon = typeInfo?.icon;
+              const isVeryUrgent = doc.daysLeft <= 7;
               return (
                 <div
                   key={doc.id}
-                  className="bg-card rounded-lg p-5 shadow-card border-l-4 cursor-pointer hover:shadow-card-hover transition-shadow"
+                  className={`bg-card rounded-lg p-5 shadow-card border-l-4 cursor-pointer hover:shadow-card-hover transition-all animate-fade-in-up ${
+                    isVeryUrgent ? "animate-pulse-glow" : ""
+                  }`}
                   style={{
-                    borderLeftColor: doc.daysLeft <= 7 ? "hsl(var(--destructive))" : "hsl(var(--warning))",
+                    borderLeftColor: isVeryUrgent ? "hsl(var(--destructive))" : "hsl(var(--warning))",
+                    animationDelay: `${i * 0.05}s`,
                   }}
                   onClick={() => navigate(`/dashboard/documento/${doc.id}`)}
                 >
@@ -225,40 +216,42 @@ export default function DashboardPage() {
 
       {/* Timeline visual */}
       {documents.length > 0 && (
-        <section className="mb-8">
+        <section className="mb-8 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
           <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
             <History className="h-5 w-5 text-muted-foreground" />
             Linha do tempo (próximos 90 dias)
           </h2>
-          <div className="bg-card rounded-lg p-6 shadow-card">
+          <div className="bg-card rounded-lg p-4 sm:p-6 shadow-card">
             <Timeline documents={documents} daysAhead={90} />
           </div>
         </section>
       )}
 
       {/* All Documents — using DocumentCard */}
-      <section>
+      <section className="animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">Todos os Documentos</h2>
           <Button variant="hero" size="sm" onClick={() => navigate("/dashboard/adicionar")}>
             <Plus className="h-4 w-4 mr-1" />
-            Adicionar documento
+            <span className="hidden sm:inline">Adicionar documento</span>
+            <span className="sm:hidden">Adicionar</span>
           </Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sorted.map((doc) => (
-            <DocumentCard
-              key={doc.id}
-              id={doc.id}
-              tipo={doc.tipo}
-              apelido={doc.apelido}
-              numero_documento={doc.numero_documento}
-              data_vencimento={doc.data_vencimento}
-              resolvido={doc.resolvido}
-              onDelete={(id) => {
-                deleteDocument(id);
-              }}
-            />
+          {sorted.map((doc, i) => (
+            <div key={doc.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.03}s` }}>
+              <DocumentCard
+                id={doc.id}
+                tipo={doc.tipo}
+                apelido={doc.apelido}
+                numero_documento={doc.numero_documento}
+                data_vencimento={doc.data_vencimento}
+                resolvido={doc.resolvido}
+                onDelete={(id) => {
+                  deleteDocument(id);
+                }}
+              />
+            </div>
           ))}
         </div>
       </section>
