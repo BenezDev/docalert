@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useDocs } from "@/hooks/useDocs";
 import { getDaysUntilExpiry } from "@/lib/documents";
-import { Bell, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X } from "lucide-react";
+import { Bell, LayoutDashboard, FileText, Users, Settings, LogOut, Menu, X, BellRing } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "Documentos", path: "/dashboard/documentos", icon: FileText },
+  { label: "Notificações", path: "/dashboard/notificacoes", icon: BellRing },
   { label: "Família", path: "/dashboard/familia", icon: Users },
   { label: "Configurações", path: "/dashboard/configuracoes", icon: Settings },
 ];
