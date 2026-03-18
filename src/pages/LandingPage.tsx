@@ -96,15 +96,17 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="container flex h-14 items-center justify-between">
+        <div className="container flex h-14 items-center justify-between px-4">
           <Logo size="sm" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="font-body text-muted-foreground">Entrar</Button>
+              <Button variant="ghost" size="sm" className="font-body text-muted-foreground hidden sm:inline-flex">Entrar</Button>
+              <Button variant="ghost" size="sm" className="font-body text-muted-foreground sm:hidden px-2">Entrar</Button>
             </Link>
             <Link to="/cadastro">
-              <Button variant="hero" size="sm">Começar grátis</Button>
+              <Button variant="hero" size="sm" className="hidden sm:inline-flex">Começar grátis</Button>
+              <Button variant="hero" size="sm" className="sm:hidden text-xs px-3">Começar</Button>
             </Link>
           </div>
         </div>
