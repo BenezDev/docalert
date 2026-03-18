@@ -50,14 +50,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/dashboard")}>
-              <Bell className="h-4 w-4" />
-              {urgentCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-body">
-                  {urgentCount > 9 ? "9+" : urgentCount}
-                </span>
-              )}
-            </Button>
+            <NotificationBell />
             <div className="hidden md:flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                 {user?.name?.charAt(0) || "U"}
