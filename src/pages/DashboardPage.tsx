@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { documents, isLoading } = useDocs();
+  const { documents, isLoading, deleteDocument } = useDocs();
   const { renewals, totalCost, totalSaved, isLoading: loadingRenewals } = useRenewals();
   const navigate = useNavigate();
 
