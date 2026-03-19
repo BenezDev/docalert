@@ -8,9 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, UserPlus, Loader2, Gift, Copy, Users } from "lucide-react";
+import { Check, Crown, UserPlus, Loader2, Gift, Copy, Users, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSubscription } from "@/hooks/useSubscription";
+import { STRIPE_PLANS } from "@/lib/stripe";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -185,37 +187,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="plano">
-            <div className="bg-card rounded-lg p-6 shadow-card space-y-6">
-              <div className="flex items-center gap-3">
-                <Crown className="h-5 w-5 text-warning" />
-                <h3 className="font-display font-bold">Plano Gratuito</h3>
-              </div>
-              <ul className="space-y-2 mb-4">
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> 1 documento</li>
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Alertas por email</li>
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Guia básico</li>
-              </ul>
-              <div className="border-t pt-4 space-y-3">
-                <p className="text-sm font-display font-semibold">Faça upgrade:</p>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div className="border border-secondary/30 rounded-lg p-4">
-                    <p className="font-display font-bold">Individual</p>
-                    <p className="text-xl font-display font-bold text-secondary">R$ 9,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
-                    <p className="text-xs text-muted-foreground font-body mt-1">Documentos ilimitados + WhatsApp</p>
-                    <Button variant="hero" size="sm" className="w-full mt-3">Assinar</Button>
-                  </div>
-                  <div className="border border-secondary/30 rounded-lg p-4">
-                    <p className="font-display font-bold">Familiar</p>
-                    <p className="text-xl font-display font-bold text-secondary">R$ 19,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
-                    <p className="text-xs text-muted-foreground font-body mt-1">Até 5 membros + painel compartilhado</p>
-                    <Button variant="hero" size="sm" className="w-full mt-3">Assinar</Button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground font-body">
-                  Empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente</a>
-                </p>
-              </div>
-            </div>
+            <PlanTab />
           </TabsContent>
 
           <TabsContent value="indicacao">
@@ -292,5 +264,101 @@ export default function SettingsPage() {
         </Tabs>
       </div>
     </DashboardLayout>
+  );
+}
+
+function PlanTab() {
+  const { subscribed, planType, subscriptionEnd, isLoading, refresh } = useSubscription();
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const handleCheckout = async (planKey: "individual" | "familiar") => {
+    setCheckoutLoading(planKey);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId: STRIPE_PLANS[planKey].price_id },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao iniciar checkout");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao abrir portal");
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-card rounded-lg p-6 shadow-card space-y-4">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" />
+      </div>
+    );
+  }
+
+  const planLabel = planType === "FAMILIAR" ? "Familiar" : planType === "INDIVIDUAL" ? "Individual" : "Gratuito";
+
+  return (
+    <div className="bg-card rounded-lg p-6 shadow-card space-y-6">
+      <div className="flex items-center gap-3">
+        <Crown className="h-5 w-5 text-warning" />
+        <h3 className="font-display font-bold">Plano {planLabel}</h3>
+        {subscribed && (
+          <Badge className="bg-success/10 text-success border-success/20 font-body">Ativo</Badge>
+        )}
+      </div>
+
+      {subscribed && subscriptionEnd && (
+        <p className="text-sm text-muted-foreground font-body">
+          Próxima renovação: {new Date(subscriptionEnd).toLocaleDateString("pt-BR")}
+        </p>
+      )}
+
+      {subscribed ? (
+        <Button variant="outline" onClick={handlePortal} disabled={portalLoading} className="font-body">
+          {portalLoading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <ExternalLink className="h-4 w-4 mr-1" />}
+          Gerenciar assinatura
+        </Button>
+      ) : (
+        <div className="border-t pt-4 space-y-3">
+          <p className="text-sm font-display font-semibold">Faça upgrade:</p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="border border-secondary/30 rounded-lg p-4">
+              <p className="font-display font-bold">Individual</p>
+              <p className="text-xl font-display font-bold text-secondary">R$ 9,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
+              <p className="text-xs text-muted-foreground font-body mt-1">Documentos ilimitados + WhatsApp</p>
+              <Button variant="hero" size="sm" className="w-full mt-3" disabled={checkoutLoading === "individual"} onClick={() => handleCheckout("individual")}>
+                {checkoutLoading === "individual" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assinar"}
+              </Button>
+            </div>
+            <div className="border border-secondary/30 rounded-lg p-4">
+              <p className="font-display font-bold">Familiar</p>
+              <p className="text-xl font-display font-bold text-secondary">R$ 19,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
+              <p className="text-xs text-muted-foreground font-body mt-1">Até 5 membros + painel compartilhado</p>
+              <Button variant="hero" size="sm" className="w-full mt-3" disabled={checkoutLoading === "familiar"} onClick={() => handleCheckout("familiar")}>
+                {checkoutLoading === "familiar" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assinar"}
+              </Button>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground font-body">
+            Empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente</a>
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
