@@ -8,9 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, UserPlus, Loader2, Gift, Copy, Users } from "lucide-react";
+import { Check, Crown, UserPlus, Loader2, Gift, Copy, Users, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSubscription } from "@/hooks/useSubscription";
+import { STRIPE_PLANS } from "@/lib/stripe";
 
 export default function SettingsPage() {
   const { user } = useAuth();
