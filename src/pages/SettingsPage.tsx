@@ -187,37 +187,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="plano">
-            <div className="bg-card rounded-lg p-6 shadow-card space-y-6">
-              <div className="flex items-center gap-3">
-                <Crown className="h-5 w-5 text-warning" />
-                <h3 className="font-display font-bold">Plano Gratuito</h3>
-              </div>
-              <ul className="space-y-2 mb-4">
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> 1 documento</li>
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Alertas por email</li>
-                <li className="flex items-center gap-2 text-sm font-body"><Check className="h-4 w-4 text-success" /> Guia básico</li>
-              </ul>
-              <div className="border-t pt-4 space-y-3">
-                <p className="text-sm font-display font-semibold">Faça upgrade:</p>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div className="border border-secondary/30 rounded-lg p-4">
-                    <p className="font-display font-bold">Individual</p>
-                    <p className="text-xl font-display font-bold text-secondary">R$ 9,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
-                    <p className="text-xs text-muted-foreground font-body mt-1">Documentos ilimitados + WhatsApp</p>
-                    <Button variant="hero" size="sm" className="w-full mt-3">Assinar</Button>
-                  </div>
-                  <div className="border border-secondary/30 rounded-lg p-4">
-                    <p className="font-display font-bold">Familiar</p>
-                    <p className="text-xl font-display font-bold text-secondary">R$ 19,90<span className="text-sm text-muted-foreground font-body">/mês</span></p>
-                    <p className="text-xs text-muted-foreground font-body mt-1">Até 5 membros + painel compartilhado</p>
-                    <Button variant="hero" size="sm" className="w-full mt-3">Assinar</Button>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground font-body">
-                  Empresarial? <a href="mailto:contato@docalert.com.br" className="text-secondary hover:underline">Fale com a gente</a>
-                </p>
-              </div>
-            </div>
+            <PlanTab />
           </TabsContent>
 
           <TabsContent value="indicacao">
