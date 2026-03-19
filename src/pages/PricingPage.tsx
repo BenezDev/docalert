@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ArrowRight, Shield, Zap, Users, Crown } from "lucide-react";
+import { Check, X, ArrowRight, Shield, Zap, Users, Crown, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { STRIPE_PLANS, type PlanKey } from "@/lib/stripe";
+import { toast } from "sonner";
 
 const plans = [
   {
@@ -15,6 +20,7 @@ const plans = [
     cta: "Começar grátis",
     variant: "outline" as const,
     popular: false,
+    stripePlan: null as PlanKey | null,
     features: [
       { label: "1 documento", included: true },
       { label: "Alertas por email", included: true },
@@ -35,6 +41,7 @@ const plans = [
     cta: "Assinar agora",
     variant: "hero" as const,
     popular: true,
+    stripePlan: "individual" as PlanKey,
     features: [
       { label: "Documentos ilimitados", included: true },
       { label: "Alertas por email", included: true },
@@ -55,6 +62,7 @@ const plans = [
     cta: "Assinar agora",
     variant: "outline" as const,
     popular: false,
+    stripePlan: "familiar" as PlanKey,
     features: [
       { label: "Documentos ilimitados", included: true },
       { label: "Alertas por email", included: true },
@@ -81,6 +89,37 @@ const comparison = [
 
 export default function PricingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (planKey: PlanKey) => {
+    if (!user) {
+      navigate("/cadastro");
+      return;
+    }
+    setLoadingPlan(planKey);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId: STRIPE_PLANS[planKey].price_id },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao iniciar checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const handlePlanClick = (plan: typeof plans[number]) => {
+    if (plan.stripePlan) {
+      handleCheckout(plan.stripePlan);
+    } else {
+      navigate("/cadastro");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,13 +129,21 @@ export default function PricingPage() {
           <Logo size="sm" />
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="font-body text-muted-foreground">Entrar</Button>
-            </Link>
-            <Link to="/cadastro">
-              <Button variant="hero" size="sm" className="hidden sm:inline-flex">Começar grátis</Button>
-              <Button variant="hero" size="sm" className="sm:hidden text-xs px-3">Começar</Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="hero" size="sm">Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="font-body text-muted-foreground">Entrar</Button>
+                </Link>
+                <Link to="/cadastro">
+                  <Button variant="hero" size="sm" className="hidden sm:inline-flex">Começar grátis</Button>
+                  <Button variant="hero" size="sm" className="sm:hidden text-xs px-3">Começar</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -150,9 +197,16 @@ export default function PricingPage() {
                 <Button
                   variant={plan.variant as any}
                   className="w-full font-body"
-                  onClick={() => navigate("/cadastro")}
+                  disabled={loadingPlan === plan.stripePlan}
+                  onClick={() => handlePlanClick(plan)}
                 >
-                  {plan.cta} <ArrowRight className="h-4 w-4 ml-1" />
+                  {loadingPlan === plan.stripePlan ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      {plan.cta} <ArrowRight className="h-4 w-4 ml-1" />
+                    </>
+                  )}
                 </Button>
               </div>
             ))}
@@ -168,9 +222,7 @@ export default function PricingPage() {
                     <tr className="border-b bg-muted/30">
                       <th className="text-left p-4 text-xs font-body font-semibold text-muted-foreground uppercase tracking-wider">Funcionalidade</th>
                       <th className="text-center p-4 text-xs font-body font-semibold text-muted-foreground uppercase tracking-wider">Gratuito</th>
-                      <th className="text-center p-4 text-xs font-body font-semibold text-muted-foreground uppercase tracking-wider">
-                        Individual
-                      </th>
+                      <th className="text-center p-4 text-xs font-body font-semibold text-muted-foreground uppercase tracking-wider">Individual</th>
                       <th className="text-center p-4 text-xs font-body font-semibold text-muted-foreground uppercase tracking-wider">Familiar</th>
                     </tr>
                   </thead>
