@@ -91,6 +91,16 @@ export default function PricingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Auto-trigger checkout if redirected back with plan param after login
+  useEffect(() => {
+    const plan = searchParams.get("plan") as PlanKey | null;
+    if (user && plan && STRIPE_PLANS[plan]) {
+      setSearchParams({}, { replace: true });
+      handleCheckout(plan);
+    }
+  }, [user, searchParams]);
 
   const handleCheckout = async (planKey: PlanKey) => {
     if (!user) {
