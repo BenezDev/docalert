@@ -94,7 +94,7 @@ export default function PricingPage() {
 
   const handleCheckout = async (planKey: PlanKey) => {
     if (!user) {
-      navigate("/cadastro");
+      navigate(`/login?redirect=/precos&plan=${planKey}`);
       return;
     }
     setLoadingPlan(planKey);
