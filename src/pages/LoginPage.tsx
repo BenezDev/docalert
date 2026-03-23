@@ -17,6 +17,10 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect");
+  const plan = searchParams.get("plan");
+  const redirectTarget = redirect ? `${redirect}${plan ? `?plan=${plan}` : ""}` : null;
+  const signupHref = redirectTarget ? `/cadastro?redirect=${encodeURIComponent(redirect)}${plan ? `&plan=${encodeURIComponent(plan)}` : ""}` : "/cadastro";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,8 +30,6 @@ export default function LoginPage() {
     if (result.error) {
       toast.error(result.error);
     } else {
-      const redirect = searchParams.get("redirect");
-      const plan = searchParams.get("plan");
       if (redirect) {
         navigate(plan ? `${redirect}?plan=${plan}` : redirect);
       } else {
@@ -38,7 +40,7 @@ export default function LoginPage() {
 
   const handleGoogle = async () => {
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectTarget ? `${window.location.origin}${redirectTarget}` : window.location.origin,
     });
     if (error) toast.error("Erro ao conectar com Google");
   };
@@ -88,7 +90,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-muted-foreground font-body">
             Não tem conta?{" "}
-            <Link to="/cadastro" className="text-secondary hover:underline font-semibold">Criar grátis</Link>
+            <Link to={signupHref} className="text-secondary hover:underline font-semibold">Criar grátis</Link>
           </p>
         </div>
       </div>

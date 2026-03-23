@@ -24,6 +24,10 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
+  const redirect = searchParams.get("redirect");
+  const plan = searchParams.get("plan");
+  const loginHref = redirect ? `/login?redirect=${encodeURIComponent(redirect)}${plan ? `&plan=${encodeURIComponent(plan)}` : ""}` : "/login";
+  const redirectTarget = redirect ? `${redirect}${plan ? `?plan=${plan}` : ""}` : null;
 
   const processReferral = async (newUserId: string) => {
     if (!refCode) return;
@@ -56,17 +60,27 @@ export default function SignupPage() {
     if (result.error) {
       toast.error(result.error);
     } else {
-      // Process referral after successful signup
-      const { data: { user } } = await supabase.auth.getUser();
+      const [{ data: { user } }, { data: { session } }] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.auth.getSession(),
+      ]);
+
       if (user) await processReferral(user.id);
-      toast.success("Conta criada! Verifique seu email para confirmar.");
-      navigate("/dashboard");
+
+      if (session?.user) {
+        toast.success("Conta criada com sucesso!");
+        navigate(redirectTarget || "/dashboard");
+        return;
+      }
+
+      toast.success("Conta criada! Confirme seu email e entre para continuar a assinatura.");
+      navigate(loginHref);
     }
   };
 
   const handleGoogle = async () => {
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectTarget ? `${window.location.origin}${redirectTarget}` : window.location.origin,
     });
     if (error) toast.error("Erro ao conectar com Google");
   };
@@ -143,7 +157,7 @@ export default function SignupPage() {
 
           <p className="mt-6 text-center text-sm text-muted-foreground font-body">
             Já tem conta?{" "}
-            <Link to="/login" className="text-secondary hover:underline font-semibold">Entrar</Link>
+            <Link to={loginHref} className="text-secondary hover:underline font-semibold">Entrar</Link>
           </p>
         </div>
       </div>
