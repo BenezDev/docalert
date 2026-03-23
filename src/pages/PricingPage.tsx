@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -91,10 +91,20 @@ export default function PricingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Auto-trigger checkout if redirected back with plan param after login
+  useEffect(() => {
+    const plan = searchParams.get("plan") as PlanKey | null;
+    if (user && plan && STRIPE_PLANS[plan]) {
+      setSearchParams({}, { replace: true });
+      handleCheckout(plan);
+    }
+  }, [user, searchParams]);
 
   const handleCheckout = async (planKey: PlanKey) => {
     if (!user) {
-      navigate("/cadastro");
+      navigate(`/login?redirect=/precos&plan=${planKey}`);
       return;
     }
     setLoadingPlan(planKey);

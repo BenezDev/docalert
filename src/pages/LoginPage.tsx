@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +26,13 @@ export default function LoginPage() {
     if (result.error) {
       toast.error(result.error);
     } else {
-      navigate("/dashboard");
+      const redirect = searchParams.get("redirect");
+      const plan = searchParams.get("plan");
+      if (redirect) {
+        navigate(plan ? `${redirect}?plan=${plan}` : redirect);
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 
