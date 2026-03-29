@@ -89,38 +89,62 @@ const comparison = [
 
 export default function PricingPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Auto-trigger checkout if redirected back with plan param after login
-  useEffect(() => {
-    const plan = searchParams.get("plan") as PlanKey | null;
-    if (user && plan && STRIPE_PLANS[plan]) {
-      setSearchParams({}, { replace: true });
-      handleCheckout(plan);
-    }
-  }, [user, searchParams]);
-
-  const handleCheckout = async (planKey: PlanKey) => {
-    if (!user) {
-      navigate(`/login?redirect=/precos&plan=${planKey}`);
-      return;
-    }
+  const startCheckout = async (planKey: PlanKey) => {
     setLoadingPlan(planKey);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { priceId: STRIPE_PLANS[planKey].price_id },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
+      if (!data?.url) throw new Error("Checkout não retornou URL");
+      window.location.href = data.url;
     } catch (err: any) {
       toast.error(err.message || "Erro ao iniciar checkout");
     } finally {
       setLoadingPlan(null);
     }
+  };
+
+  // Auto-trigger checkout if redirected back with plan param after login
+  useEffect(() => {
+    const plan = searchParams.get("plan") as PlanKey | null;
+    if (!plan || !STRIPE_PLANS[plan] || isLoading) return;
+
+    let cancelled = false;
+
+    const resumeCheckout = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session || cancelled) return;
+
+      setSearchParams({}, { replace: true });
+      await startCheckout(plan);
+    };
+
+    void resumeCheckout();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoading, searchParams, setSearchParams]);
+
+  const handleCheckout = async (planKey: PlanKey) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      navigate(`/login?redirect=/precos&plan=${planKey}`, { replace: true });
+      return;
+    }
+
+    await startCheckout(planKey);
   };
 
   const handlePlanClick = (plan: typeof plans[number]) => {
