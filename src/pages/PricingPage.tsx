@@ -135,13 +135,16 @@ export default function PricingPage() {
   }, [isLoading, searchParams, setSearchParams]);
 
   const handleCheckout = async (planKey: PlanKey) => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    // Use auth context first (already loaded), fall back to getSession
+    if (!user) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (!session) {
-      navigate(`/login?redirect=/precos&plan=${planKey}`, { replace: true });
-      return;
+      if (!session) {
+        navigate(`/login?redirect=/precos&plan=${planKey}`, { replace: true });
+        return;
+      }
     }
 
     await startCheckout(planKey);
