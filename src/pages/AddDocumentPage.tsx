@@ -46,31 +46,40 @@ export default function AddDocumentPage() {
   const handleSave = async () => {
     if (!tipo || !dataVenc) return;
     setSaving(true);
-    const docId = await addDocument({
-      tipo,
-      apelido: apelido || undefined,
-      numero_documento: numero || undefined,
-      data_vencimento: dataVenc.toISOString().split("T")[0],
-      data_emissao: dataEmissao?.toISOString().split("T")[0],
-      observacoes: obs || undefined,
-      resolvido: false,
-    });
+    try {
+      const docId = await addDocument({
+        tipo,
+        apelido: apelido || undefined,
+        numero_documento: numero || undefined,
+        data_vencimento: dataVenc.toISOString().split("T")[0],
+        data_emissao: dataEmissao?.toISOString().split("T")[0],
+        observacoes: obs || undefined,
+        resolvido: false,
+      }, planType);
 
-    if (docId && alertDays.length > 0 && user) {
-      await supabase.from("alertas_configuracao").insert(
-        alertDays.map((dias) => ({
-          documento_id: docId,
-          usuario_id: user.id,
-          dias_antes: dias,
-          via_email: viaEmail,
-          ativo: true,
-        }))
-      );
+      if (docId && alertDays.length > 0 && user) {
+        await supabase.from("alertas_configuracao").insert(
+          alertDays.map((dias) => ({
+            documento_id: docId,
+            usuario_id: user.id,
+            dias_antes: dias,
+            via_email: viaEmail,
+            ativo: true,
+          }))
+        );
+      }
+
+      toast.success("Documento adicionado com sucesso!");
+      navigate("/dashboard");
+    } catch (err: any) {
+      if (err?.message === "PLAN_LIMIT") {
+        setShowUpgrade(true);
+      } else {
+        toast.error("Erro ao salvar documento.");
+      }
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    toast.success("Documento adicionado com sucesso!");
-    navigate("/dashboard");
   };
 
   const docTypes = Object.entries(DOCUMENT_TYPES) as [DocumentType, (typeof DOCUMENT_TYPES)[DocumentType]][];
