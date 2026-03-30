@@ -262,6 +262,31 @@ export default function AddDocumentPage() {
           </div>
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      <AlertDialog open={showUpgrade} onOpenChange={setShowUpgrade}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex justify-center mb-2">
+              <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
+                <Crown className="h-6 w-6 text-warning" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center">Limite do plano gratuito</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              O plano gratuito permite apenas <strong>1 documento</strong>. Faça upgrade para adicionar documentos ilimitados e receber alertas por WhatsApp.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel className="font-body">Voltar</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Link to="/precos" className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-body px-4 py-2 rounded-md text-sm font-medium">
+                <Crown className="h-4 w-4" /> Ver planos
+              </Link>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
