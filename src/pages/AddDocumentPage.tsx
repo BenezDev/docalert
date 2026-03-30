@@ -10,13 +10,18 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDocs } from "@/hooks/useDocs";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
-import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2, Crown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const steps = ["Tipo", "Dados", "Alertas"];
 
