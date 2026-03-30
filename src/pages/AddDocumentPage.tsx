@@ -38,8 +38,10 @@ export default function AddDocumentPage() {
 
   const { user } = useAuth();
   const { addDocument } = useDocs();
+  const { planType } = useSubscription();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const handleSave = async () => {
     if (!tipo || !dataVenc) return;
