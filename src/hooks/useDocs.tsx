@@ -21,7 +21,7 @@ export interface DocRecord {
 interface DocsContextType {
   documents: DocRecord[];
   isLoading: boolean;
-  addDocument: (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }) => Promise<string | null>;
+  addDocument: (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }, planType?: string) => Promise<string | null>;
   updateDocument: (id: string, updates: Partial<DocRecord>) => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
   getDocument: (id: string) => DocRecord | undefined;
