@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +10,18 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDocs } from "@/hooks/useDocs";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
-import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2, Crown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 const steps = ["Tipo", "Dados", "Alertas"];
 
@@ -33,37 +38,48 @@ export default function AddDocumentPage() {
 
   const { user } = useAuth();
   const { addDocument } = useDocs();
+  const { planType } = useSubscription();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const handleSave = async () => {
     if (!tipo || !dataVenc) return;
     setSaving(true);
-    const docId = await addDocument({
-      tipo,
-      apelido: apelido || undefined,
-      numero_documento: numero || undefined,
-      data_vencimento: dataVenc.toISOString().split("T")[0],
-      data_emissao: dataEmissao?.toISOString().split("T")[0],
-      observacoes: obs || undefined,
-      resolvido: false,
-    });
+    try {
+      const docId = await addDocument({
+        tipo,
+        apelido: apelido || undefined,
+        numero_documento: numero || undefined,
+        data_vencimento: dataVenc.toISOString().split("T")[0],
+        data_emissao: dataEmissao?.toISOString().split("T")[0],
+        observacoes: obs || undefined,
+        resolvido: false,
+      }, planType);
 
-    if (docId && alertDays.length > 0 && user) {
-      await supabase.from("alertas_configuracao").insert(
-        alertDays.map((dias) => ({
-          documento_id: docId,
-          usuario_id: user.id,
-          dias_antes: dias,
-          via_email: viaEmail,
-          ativo: true,
-        }))
-      );
+      if (docId && alertDays.length > 0 && user) {
+        await supabase.from("alertas_configuracao").insert(
+          alertDays.map((dias) => ({
+            documento_id: docId,
+            usuario_id: user.id,
+            dias_antes: dias,
+            via_email: viaEmail,
+            ativo: true,
+          }))
+        );
+      }
+
+      toast.success("Documento adicionado com sucesso!");
+      navigate("/dashboard");
+    } catch (err: any) {
+      if (err?.message === "PLAN_LIMIT") {
+        setShowUpgrade(true);
+      } else {
+        toast.error("Erro ao salvar documento.");
+      }
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    toast.success("Documento adicionado com sucesso!");
-    navigate("/dashboard");
   };
 
   const docTypes = Object.entries(DOCUMENT_TYPES) as [DocumentType, (typeof DOCUMENT_TYPES)[DocumentType]][];
@@ -246,6 +262,31 @@ export default function AddDocumentPage() {
           </div>
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      <AlertDialog open={showUpgrade} onOpenChange={setShowUpgrade}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex justify-center mb-2">
+              <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
+                <Crown className="h-6 w-6 text-warning" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center">Limite do plano gratuito</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              O plano gratuito permite apenas <strong>1 documento</strong>. Faça upgrade para adicionar documentos ilimitados e receber alertas por WhatsApp.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel className="font-body">Voltar</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Link to="/precos" className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-body px-4 py-2 rounded-md text-sm font-medium">
+                <Crown className="h-4 w-4" /> Ver planos
+              </Link>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

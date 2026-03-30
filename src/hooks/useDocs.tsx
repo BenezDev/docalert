@@ -21,7 +21,7 @@ export interface DocRecord {
 interface DocsContextType {
   documents: DocRecord[];
   isLoading: boolean;
-  addDocument: (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }) => Promise<string | null>;
+  addDocument: (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }, planType?: string) => Promise<string | null>;
   updateDocument: (id: string, updates: Partial<DocRecord>) => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
   getDocument: (id: string) => DocRecord | undefined;
@@ -53,8 +53,20 @@ export function DocsProvider({ children }: { children: ReactNode }) {
     fetchDocs();
   }, [fetchDocs]);
 
-  const addDocument = async (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }) => {
+  const addDocument = async (doc: { tipo: string; apelido?: string; numero_documento?: string; data_vencimento: string; data_emissao?: string; observacoes?: string; resolvido: boolean }, planType?: string) => {
     if (!user) return null;
+
+    // Enforce FREE plan limit: max 1 document
+    if (!planType || planType === "FREE") {
+      const { count } = await supabase
+        .from("documentos")
+        .select("*", { count: "exact", head: true })
+        .eq("usuario_id", user.id);
+      if ((count ?? 0) >= 1) {
+        throw new Error("PLAN_LIMIT");
+      }
+    }
+
     const { data, error } = await supabase
       .from("documentos")
       .insert({
