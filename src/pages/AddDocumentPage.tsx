@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDocs } from "@/hooks/useDocs";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
+
 import { supabase } from "@/integrations/supabase/client";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
 import { CalendarIcon, ArrowLeft, ArrowRight, Check, Loader2, Crown } from "lucide-react";
@@ -38,7 +38,7 @@ export default function AddDocumentPage() {
 
   const { user } = useAuth();
   const { addDocument } = useDocs();
-  const { planType } = useSubscription();
+  
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -55,7 +55,7 @@ export default function AddDocumentPage() {
         data_emissao: dataEmissao?.toISOString().split("T")[0],
         observacoes: obs || undefined,
         resolvido: false,
-      }, planType);
+      });
 
       if (docId && alertDays.length > 0 && user) {
         await supabase.from("alertas_configuracao").insert(
@@ -72,7 +72,7 @@ export default function AddDocumentPage() {
       toast.success("Documento adicionado com sucesso!");
       navigate("/dashboard");
     } catch (err: any) {
-      if (err?.message === "PLAN_LIMIT") {
+      if (err?.message?.includes("PLAN_LIMIT")) {
         setShowUpgrade(true);
       } else {
         toast.error("Erro ao salvar documento.");

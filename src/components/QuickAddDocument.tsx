@@ -32,14 +32,17 @@ export function QuickAddDocument() {
     if (!tipo || !dataVenc || !user) return;
     setSaving(true);
 
-    const docId = await addDocument({
-      tipo,
-      data_vencimento: dataVenc.toISOString().split("T")[0],
-      resolvido: false,
-    });
+    try {
+      const docId = await addDocument({
+        tipo,
+        data_vencimento: dataVenc.toISOString().split("T")[0],
+        resolvido: false,
+      });
 
-    // Auto-create default alerts
-    if (docId) {
+      if (!docId) {
+        throw new Error("CREATE_FAILED");
+      }
+
       await supabase.from("alertas_configuracao").insert(
         DEFAULT_ALERT_DAYS.map((dias) => ({
           documento_id: docId,
@@ -49,18 +52,25 @@ export function QuickAddDocument() {
           ativo: true,
         }))
       );
-    }
 
-    setSaving(false);
-    setDone(true);
-    toast.success("Documento adicionado! Alertas configurados automaticamente.");
-    
-    setTimeout(() => {
-      setDone(false);
-      setTipo("");
-      setDataVenc(undefined);
-      setOpen(false);
-    }, 1500);
+      setDone(true);
+      toast.success("Documento adicionado! Alertas configurados automaticamente.");
+
+      setTimeout(() => {
+        setDone(false);
+        setTipo("");
+        setDataVenc(undefined);
+        setOpen(false);
+      }, 1500);
+    } catch (error: any) {
+      if (error?.message?.includes("PLAN_LIMIT")) {
+        toast.error("O plano gratuito permite apenas 1 documento.");
+      } else {
+        toast.error("Erro ao salvar documento.");
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!open) {
