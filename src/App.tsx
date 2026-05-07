@@ -1,84 +1,27 @@
-import { lazy, Suspense } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { DocsProvider } from "@/hooks/useDocs";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './context/AuthContext'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import Landing from './pages/Landing_1'
+import Onboarding from './pages/Onboarding'
+import DocumentoDetalhe from './pages/DocumentoDetalhe'
 
-// Lazy-loaded pages
-const LandingPage = lazy(() => import("./pages/LandingPage"));
-const LoginPage = lazy(() => import("./pages/LoginPage"));
-const SignupPage = lazy(() => import("./pages/SignupPage"));
-const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
-const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
-const DashboardPage = lazy(() => import("./pages/DashboardPage"));
-const AddDocumentPage = lazy(() => import("./pages/AddDocumentPage"));
-const DocumentDetailPage = lazy(() => import("./pages/DocumentDetailPage"));
-const SettingsPage = lazy(() => import("./pages/SettingsPage"));
-const DocumentsPage = lazy(() => import("./pages/DocumentsPage"));
-const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
-const PricingPage = lazy(() => import("./pages/PricingPage"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+function App() {
+  const { user, loading } = useAuth()
 
-const queryClient = new QueryClient();
+  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Inter, system-ui, sans-serif', color: '#64748b' }}>Carregando...</div>
 
-function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-8 w-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-muted-foreground font-body">Carregando...</p>
-      </div>
-    </div>
-  );
-}
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
-  if (isLoading) return <PageLoader />;
-  if (!user) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-}
-
-function AppRoutes() {
-  return (
-    <Suspense fallback={<PageLoader />}>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/cadastro" element={<SignupPage />} />
-        <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/dashboard/adicionar" element={<ProtectedRoute><AddDocumentPage /></ProtectedRoute>} />
-        <Route path="/dashboard/documento/:id" element={<ProtectedRoute><DocumentDetailPage /></ProtectedRoute>} />
-        <Route path="/dashboard/configuracoes" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-        <Route path="/dashboard/documentos" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
-        <Route path="/dashboard/notificacoes" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-        <Route path="/dashboard/familia" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-        <Route path="/precos" element={<PricingPage />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+        <Route path="/onboarding" element={user ? <Onboarding /> : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/documento/:id" element={user ? <DocumentoDetalhe /> : <Navigate to="/login" />} />
       </Routes>
-    </Suspense>
-  );
+    </BrowserRouter>
+  )
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <DocsProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
-      </DocsProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
-
-export default App;
+export default App

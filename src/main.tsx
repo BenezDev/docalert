@@ -1,9 +1,13 @@
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import { initTheme } from "./components/ThemeToggle";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { AuthProvider } from './context/AuthContext'
+import App from './App.tsx'
+import './index.css'
 
-// Initialize theme before React renders to avoid flash
-initTheme();
-
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </StrictMode>,
+)
