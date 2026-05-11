@@ -25,11 +25,21 @@ const LABELS: Record<string, string> = {
   carteira_trabalho: 'Carteira de Trabalho', outro: 'Outro'
 }
 
+function parseData(data: string) {
+  const [ano, mes, dia] = data.split('-').map(Number)
+  return new Date(ano, mes - 1, dia)
+}
+
 function diasRestantes(data: string) {
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
-  const venc = new Date(data + 'T00:00:00')
+  const venc = parseData(data)
   return Math.round((venc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function formatarData(data: string) {
+  const [ano, mes, dia] = data.split('-')
+  return `${dia}/${mes}/${ano}`
 }
 
 function getStatus(dias: number) {
@@ -89,7 +99,6 @@ export default function Dashboard() {
 
       {modal && <AddDocumentModal dark={dark} onClose={() => setModal(false)} onSuccess={() => { setModal(false); carregarDocs() }} />}
 
-      {/* NAV */}
       <nav style={{ background: surface, borderBottom: `1px solid ${border}`, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <span style={{ fontSize: 18, fontWeight: 800, color: text }}>
           Doc<span style={{ color: ACCENT }}>Alert</span>
@@ -106,7 +115,6 @@ export default function Dashboard() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 16px' }}>
 
-        {/* HEADER */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 800, color: text, letterSpacing: '-0.5px', marginBottom: 4 }}>
@@ -119,7 +127,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* STATS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 24 }}>
           {[
             { label: 'Em dia', valor: emDia, cor: '#22c55e' },
@@ -133,7 +140,6 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* DOCUMENTOS */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '48px 0', color: muted }}>Carregando...</div>
         ) : docs.length === 0 ? (
@@ -168,7 +174,7 @@ export default function Dashboard() {
                           {doc.apelido || LABELS[doc.tipo] || doc.tipo}
                         </div>
                         <div style={{ fontSize: 12, color: muted, marginBottom: 6 }}>
-                          Vence em {new Date(doc.data_vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}
+                          Vence em {formatarData(doc.data_vencimento)}
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 700, color: status.cor, background: dark ? status.bgDark : status.bg, padding: '2px 8px', borderRadius: 100 }}>
                           {status.label}
