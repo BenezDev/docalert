@@ -26,8 +26,8 @@ const LABELS: Record<string, string> = {
 }
 
 function parseData(data: string) {
-  const [ano, mes, dia] = data.split('-').map(Number)
-  return new Date(ano, mes - 1, dia)
+  const partes = data.split('-')
+  return new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]))
 }
 
 function diasRestantes(data: string) {
@@ -38,6 +38,9 @@ function diasRestantes(data: string) {
 }
 
 function formatarData(data: string) {
+  const partes = data.split('-')
+  return `${partes[2]}/${partes[1]}/${partes[0]}`
+}
   const [ano, mes, dia] = data.split('-')
   return `${dia}/${mes}/${ano}`
 }
